@@ -1,0 +1,902 @@
+[
+  {
+    "questionForeignKey": "51dfe2a2-babd-47c6-9a77-760a5e7ba1c6",
+    "answers": [
+      "Stratovolcano",
+      "Shield Volcano",
+      "Cinder Cone,]"
+    ],
+    "correctAnswer": "Shield Volcano"
+  },
+  {
+    "questionForeignKey": "4429a1e0-cc40-482c-b8cb-1a28345b731b",
+    "answers": [
+      "79 AD",
+      "1066 AD",
+      "1812 AD]"
+    ],
+    "correctAnswer": "79 AD"
+  },
+  {
+    "questionForeignKey": "61ebf066-b45f-44b4-ba07-8da28b43f1f1",
+    "answers": [
+      "Lava Fountain",
+      "Volcanic Plume",
+      "Eruption Column]"
+    ],
+    "correctAnswer": "Eruption Column"
+  },
+  {
+    "questionForeignKey": "3d6fc16e-ebe2-4b6a-a55d-53344385c7e6",
+    "answers": [
+      "Divergent Boundary",
+      "Convergent Boundary",
+      "Transform Boundary]"
+    ],
+    "correctAnswer": "Convergent Boundary"
+  },
+  {
+    "questionForeignKey": "e3f44334-2550-454c-bbfb-1273162eb4ad",
+    "answers": [
+      "Iceland",
+      "United States (Alaska)",
+      "Japan]"
+    ],
+    "correctAnswer": "United States (Alaska)"
+  },
+  {
+    "questionForeignKey": "ebf02606-5093-4661-a699-23247700f60d",
+    "answers": [
+      "Basalt",
+      "Pumice",
+      "Obsidian]"
+    ],
+    "correctAnswer": "Basalt"
+  },
+  {
+    "questionForeignKey": "1b0a618d-c5b7-4249-8732-ee51afc3c8c2",
+    "answers": [
+      "Quartz",
+      "Feldspar",
+      "Zircon]"
+    ],
+    "correctAnswer": "Feldspar"
+  },
+  {
+    "questionForeignKey": "261f91bb-38a8-413a-8995-2b1ddc86e78f",
+    "answers": [
+      "Mantle",
+      "Crust",
+      "Outer Core]"
+    ],
+    "correctAnswer": "Mantle"
+  },
+  {
+    "questionForeignKey": "444f0722-608d-4121-9807-78acd8925335",
+    "answers": [
+      "Vent",
+      "Fissure",
+      "Lava Fountain]"
+    ],
+    "correctAnswer": "Lava Fountain"
+  },
+  {
+    "questionForeignKey": "5ade8ce2-3129-4b7b-937a-1eb782cd93f8",
+    "answers": [
+      "Pumice",
+      "Obsidian",
+      "Gneiss]"
+    ],
+    "correctAnswer": "Pumice\n"
+  },
+  {
+    "questionForeignKey": "0ad6bfe3-1c46-4f3e-953a-9c00c4b983cb",
+    "answers": [
+      "Stratovolcano",
+      "Shield Volcano",
+      "Complex Volcano]"
+    ],
+    "correctAnswer": "Complex Volcano"
+  },
+  {
+    "questionForeignKey": "4d6579c5-9038-4e9b-8500-2c4117966cc3",
+    "answers": [
+      "Mount St. Helens",
+      "Mount Etna",
+      "Mount Kilimanjaro]"
+    ],
+    "correctAnswer": "Mount Etna"
+  },
+  {
+    "questionForeignKey": "d15116ad-c3b0-4605-a55b-173090989d86",
+    "answers": [
+      "Fumarole",
+      "Geyser",
+      "Ventole]"
+    ],
+    "correctAnswer": "Fumarole"
+  },
+  {
+    "questionForeignKey": "c12a132c-1c5f-44d0-b0b9-b2ec9ddb1d2a",
+    "answers": [
+      "Pacific Ocean",
+      "Indian Ocean",
+      "Atlantic Ocean]"
+    ],
+    "correctAnswer": "Indian Ocean"
+  },
+  {
+    "questionForeignKey": "d03cb2e3-b77a-4e41-ac03-eca8bff7df18",
+    "answers": [
+      "Mount St. Helens",
+      "Mount Vesuvius",
+      "Mount Fuji]"
+    ],
+    "correctAnswer": "Mount Vesuvius"
+  },
+  {
+    "questionForeignKey": "a7d04336-8bd6-47e7-ba93-dc3ca3a66b68",
+    "answers": [
+      "Dormant Volcano",
+      "Extinct Volcano",
+      "Active Volcano]"
+    ],
+    "correctAnswer": "Extinct Volcano"
+  },
+  {
+    "questionForeignKey": "dbece1c5-bef0-46ba-b3fb-ad0b3d475ee8",
+    "answers": [
+      "Santorini",
+      "Sicily",
+      "Crete]"
+    ],
+    "correctAnswer": "Santorini"
+  },
+  {
+    "questionForeignKey": "6fedc3fb-b0ad-4989-8d54-a610d3438d17",
+    "answers": [
+      "Basaltic Lava",
+      "Andesitic Lava",
+      "Rhyolitic Lava]"
+    ],
+    "correctAnswer": "Rhyolitic Lava"
+  },
+  {
+    "questionForeignKey": "08702d14-309f-4561-99bf-44fc1d0549b2",
+    "answers": [
+      "Pumice",
+      "Ash",
+      "Scoria]"
+    ],
+    "correctAnswer": "Ash"
+  },
+  {
+    "questionForeignKey": "e83f942f-0c90-4194-841c-bda8076f794d",
+    "answers": [
+      "Lava",
+      "Magma",
+      "Pyroclastic Flow]"
+    ],
+    "correctAnswer": "Lava"
+  },
+  {
+    "questionForeignKey": "67500088-b1c0-49f9-b637-0b4166a64f88",
+    "answers": [
+      "Mount Vesuvius",
+      "Mount Fuji",
+      "Mount Kilimanjaro]"
+    ],
+    "correctAnswer": "Mount Fuji"
+  },
+  {
+    "questionForeignKey": "3d2bd0e1-acc5-4483-8c9e-86202b1b88b1",
+    "answers": [
+      "Mount St. Helens",
+      "Krakatoa",
+      "Mount Pinatubo]"
+    ],
+    "correctAnswer": "Krakatoa"
+  },
+  {
+    "questionForeignKey": "938f60cc-e6a7-4e53-adec-c9396cfa3269",
+    "answers": [
+      "Oxygen",
+      "Sulfur Dioxide",
+      "Carbon Monoxide]"
+    ],
+    "correctAnswer": "Sulfur Dioxide"
+  },
+  {
+    "questionForeignKey": "4c25bbe6-5fc1-470e-a427-73ad4dc37fb9",
+    "answers": [
+      "Mount Tambora eruption",
+      "Krakatoa eruption",
+      "Mount Pinatubo eruption]"
+    ],
+    "correctAnswer": "Mount Tambora eruption"
+  },
+  {
+    "questionForeignKey": "d922b2b5-4261-475c-9360-98bb2606daf9",
+    "answers": [
+      "Mount Etna",
+      "Mauna Kea",
+      "Mauna Loa]"
+    ],
+    "correctAnswer": "Mauna Loa"
+  },
+  {
+    "questionForeignKey": "75b80d7f-6a85-40cb-a295-a86bdc0716fc",
+    "answers": [
+      "1980",
+      "1991",
+      "2000]"
+    ],
+    "correctAnswer": "1991"
+  },
+  {
+    "questionForeignKey": "6f7de8e5-81df-4fbd-a945-681ab89f3dc9",
+    "answers": [
+      "Dormant Volcano",
+      "Extinct Volcano",
+      "Inactive Volcano]"
+    ],
+    "correctAnswer": "Dormant Volcano"
+  },
+  {
+    "questionForeignKey": "256e0fdf-dabd-4cd8-a37e-2d4d417a707f",
+    "answers": [
+      "Rwanda",
+      "Kenya",
+      "Tanzania]"
+    ],
+    "correctAnswer": "Rwanda"
+  },
+  {
+    "questionForeignKey": "47e5a563-df3b-46db-ba77-7d89138a2070",
+    "answers": [
+      "They create oceanic ridges",
+      "They mark the boundaries of tectonic plates",
+      "They form along subduction zones]"
+    ],
+    "correctAnswer": "They form along subduction zones"
+  },
+  {
+    "questionForeignKey": "9d592d71-9add-4f6b-8935-fbbbf008d21f",
+    "answers": [
+      "Rhyolite",
+      "Andesite",
+      "Basalt]"
+    ],
+    "correctAnswer": "Rhyolite"
+  },
+  {
+    "questionForeignKey": "7031772f-1238-4c30-b14a-681588f6d18f",
+    "answers": [
+      "Italy",
+      "Greece",
+      "Spain]"
+    ],
+    "correctAnswer": "Italy"
+  },
+  {
+    "questionForeignKey": "2d624fbf-3305-4c91-8d54-dc24a0622b89",
+    "answers": [
+      "South Africa",
+      "New Zealand",
+      "Argentina]"
+    ],
+    "correctAnswer": "South Africa"
+  },
+  {
+    "questionForeignKey": "89b9b3e3-3cc8-4715-80d0-44df5d1d43dc",
+    "answers": [
+      "Andes",
+      "Alps",
+      "Apennines]"
+    ],
+    "correctAnswer": "Apennines"
+  },
+  {
+    "questionForeignKey": "fadd4fdf-d0ba-4077-8977-900a283ddf76",
+    "answers": [
+      "Mount Tambora",
+      "Mount Pinatubo",
+      "Krakatoa]"
+    ],
+    "correctAnswer": "Mount Tambora"
+  },
+  {
+    "questionForeignKey": "950aec39-ed60-4d9a-9cea-b004578a7a6a",
+    "answers": [
+      "Yellowstone National Park",
+      "Grand Canyon National Park",
+      "Yosemite National Park]"
+    ],
+    "correctAnswer": "Yellowstone National Park"
+  },
+  {
+    "questionForeignKey": "31e8d6c9-f2b8-4769-9f5f-692a9125b2fd",
+    "answers": [
+      "Shield Volcano",
+      "Stratovolcano",
+      "Cinder Cone]"
+    ],
+    "correctAnswer": "Shield Volcano"
+  },
+  {
+    "questionForeignKey": "c0e8b690-e83a-4fee-8bec-3c532c225701",
+    "answers": [
+      "Shield Volcano",
+      "Cinder Cone",
+      "Stratovolcano]"
+    ],
+    "correctAnswer": "Shield Volcano"
+  },
+  {
+    "questionForeignKey": "5d9ca192-a00f-46df-8f4d-8ee9f239941f",
+    "answers": [
+      "Fissure",
+      "Fault",
+      "Crevasse]"
+    ],
+    "correctAnswer": "Fissure"
+  },
+  {
+    "questionForeignKey": "cac06308-247e-4c57-87c1-ab85df4b670c",
+    "answers": [
+      "Crater",
+      "Vent",
+      "Abyss]"
+    ],
+    "correctAnswer": "Crater"
+  },
+  {
+    "questionForeignKey": "956f744d-547f-4290-9def-c1a5940fe0a2",
+    "answers": [
+      "A circle of active volcanoes around the Pacific Ocean",
+      "A volcanic island chain in the Atlantic Ocean",
+      "A desert region with dormant volcanoes]"
+    ],
+    "correctAnswer": "A circle of active volcanoes around the Pacific Ocean"
+  },
+  {
+    "questionForeignKey": "7dbe65be-006a-4923-9a57-9bd3d071799a",
+    "answers": [
+      "Hydrogen",
+      "Carbon Monoxide",
+      "Water Vapor]"
+    ],
+    "correctAnswer": "Water Vapor"
+  },
+  {
+    "questionForeignKey": "be46a850-5198-4f02-a296-208818038d9e",
+    "answers": [
+      "Rhyolite",
+      "Andesite",
+      "Basalt]"
+    ],
+    "correctAnswer": "Basalt"
+  },
+  {
+    "questionForeignKey": "3bc03cbd-ba03-4000-8cef-ab0e5854f78b",
+    "answers": [
+      "Mayon Volcano",
+      "Taal Volcano",
+      "Mount Apo]"
+    ],
+    "correctAnswer": "Taal Volcano"
+  },
+  {
+    "questionForeignKey": "ea4e9696-9ba6-4228-9541-1c4b2f0d858e",
+    "answers": [
+      "Shield Volcano",
+      "Cinder Cone",
+      "Stratovolcano]"
+    ],
+    "correctAnswer": "Stratovolcano"
+  },
+  {
+    "questionForeignKey": "643f9416-3603-4f2f-b2e5-97c8d6db108c",
+    "answers": [
+      "Crater",
+      "Vent",
+      "Caldera]"
+    ],
+    "correctAnswer": "Caldera"
+  },
+  {
+    "questionForeignKey": "476b9677-a3df-490b-a6ff-5e260e2ccf89",
+    "answers": [
+      "Shield Volcano",
+      "Cinder Cone",
+      "Stratovolcano]"
+    ],
+    "correctAnswer": "Shield Volcano"
+  },
+  {
+    "questionForeignKey": "b2d76f61-988c-4172-9ac8-cd1cf5e0dc04",
+    "answers": [
+      "Ecuador",
+      "Peru",
+      "Chile]"
+    ],
+    "correctAnswer": "Ecuador"
+  },
+  {
+    "questionForeignKey": "733b19d6-299e-4fc6-93f6-486199dc8e1e",
+    "answers": [
+      "Oxygen",
+      "Sulfur Dioxide",
+      "Carbon Dioxide]"
+    ],
+    "correctAnswer": "Sulfur Dioxide"
+  },
+  {
+    "questionForeignKey": "123bd517-8ab3-4aff-bcda-6489879cf73e",
+    "answers": [
+      "Convergent Boundary",
+      "Divergent Boundary",
+      "Transform Boundary]"
+    ],
+    "correctAnswer": "Convergent Boundary"
+  },
+  {
+    "questionForeignKey": "711ce2cb-8ffd-492e-98b0-432b17e0ea41",
+    "answers": [
+      "Indonesia",
+      "Japan",
+      "Greece]"
+    ],
+    "correctAnswer": "Indonesia"
+  },
+  {
+    "questionForeignKey": "c8e819ac-7a79-429c-bf9b-17c920bdb605",
+    "answers": [
+      "Crater",
+      "Vent",
+      "Abyss]"
+    ],
+    "correctAnswer": "Crater"
+  },
+  {
+    "questionForeignKey": "97f72c78-3111-4bcd-8fcb-42258f482565",
+    "answers": [
+      "Italy",
+      "Spain",
+      "Greece]"
+    ],
+    "correctAnswer": "Spain"
+  },
+  {
+    "questionForeignKey": "3f41ddd3-3d06-41ad-88a3-3600cbebb914",
+    "answers": [
+      "Basaltic Lava",
+      "Andesitic Lava",
+      "Rhyolitic Lava]"
+    ],
+    "correctAnswer": "Basaltic Lava"
+  },
+  {
+    "questionForeignKey": "98a0dfd0-f79b-4917-99ba-4886567b6bcd",
+    "answers": [
+      "Mount Fuji",
+      "Mount St. Helens",
+      "Mount Rainier]"
+    ],
+    "correctAnswer": "Mount St. Helens"
+  },
+  {
+    "questionForeignKey": "a31079ef-a771-4a6d-85aa-56c28bb57bec",
+    "answers": [
+      "Rhyolite",
+      "Andesite",
+      "Basalt]"
+    ],
+    "correctAnswer": "Basalt"
+  },
+  {
+    "questionForeignKey": "a25ecbcf-e85f-4eb1-8180-e7c7c56b0dc8",
+    "answers": [
+      "Shield Volcano",
+      "Cinder Cone",
+      "Stratovolcano]"
+    ],
+    "correctAnswer": "Cinder Cone"
+  },
+  {
+    "questionForeignKey": "24ad1a4b-fec4-4e23-9644-5f618a23a738",
+    "answers": [
+      "Earthquake intensity",
+      "Volcanic eruption magnitude",
+      "Tsunami height]"
+    ],
+    "correctAnswer": "Volcanic eruption magnitude"
+  },
+  {
+    "questionForeignKey": "59bf4322-0a19-4cc2-a62e-a9c9ad84fb62",
+    "answers": [
+      "Lava",
+      "Obsidian",
+      "Granite]"
+    ],
+    "correctAnswer": "Granite"
+  },
+  {
+    "questionForeignKey": "efdcb6fb-7b73-43fb-91ce-8f9a0f5db9bc",
+    "answers": [
+      "Caldera",
+      "Maar",
+      "Crater Lake]"
+    ],
+    "correctAnswer": "Maar"
+  },
+  {
+    "questionForeignKey": "e3ad9378-45e3-4810-9fd4-4515e3168e47",
+    "answers": [
+      "Granite",
+      "Pumice",
+      "Basalt]"
+    ],
+    "correctAnswer": "Basalt"
+  },
+  {
+    "questionForeignKey": "30e3dbdf-9387-44d4-a4a4-674612e45592",
+    "answers": [
+      "Oxygen",
+      "Carbon Dioxide",
+      "Nitrogen]"
+    ],
+    "correctAnswer": "Carbon Dioxide"
+  },
+  {
+    "questionForeignKey": "26f1cab5-1f06-40d1-8683-896d4f343d6a",
+    "answers": [
+      "Obsidian",
+      "Pumice",
+      "Basalt]"
+    ],
+    "correctAnswer": "Obsidian"
+  },
+  {
+    "questionForeignKey": "391171ce-8d1a-42c1-a8e9-eb407abcd105",
+    "answers": [
+      "Mauna Loa",
+      "Mount Etna",
+      "Mount Kilimanjaro]"
+    ],
+    "correctAnswer": "Mauna Loa"
+  },
+  {
+    "questionForeignKey": "6ff75bfa-2a0f-4a2e-8444-6167adffd9e7",
+    "answers": [
+      "Mid-Atlantic Ridge",
+      "Aleutian Islands",
+      "Mariana Trench]"
+    ],
+    "correctAnswer": "Aleutian Islands"
+  },
+  {
+    "questionForeignKey": "65e330a2-cd54-462b-b701-21fc2b8399b3",
+    "answers": [
+      "Eyjafjallajökull eruption",
+      "Mount Merapi eruption",
+      "Popocatépetl eruption]"
+    ],
+    "correctAnswer": "Eyjafjallajökull eruption"
+  },
+  {
+    "questionForeignKey": "487037df-7b05-438d-8379-850c7d4f4fbd",
+    "answers": [
+      "Seismology",
+      "Volcanology",
+      "Petrology]"
+    ],
+    "correctAnswer": "Volcanology"
+  },
+  {
+    "questionForeignKey": "ccb68f70-d61b-43dd-9721-e1309a113e2e",
+    "answers": [
+      "Pumice",
+      "Obsidian",
+      "Rhyolite]"
+    ],
+    "correctAnswer": "Rhyolite"
+  },
+  {
+    "questionForeignKey": "c3180e45-09c3-4fa4-a305-27ea2c93bf07",
+    "answers": [
+      "The type of lava",
+      "The presence of water",
+      "The depth of the magma chamber]"
+    ],
+    "correctAnswer": "The presence of water"
+  },
+  {
+    "questionForeignKey": "92f7944c-f1bf-4801-bc9d-98e690a249ef",
+    "answers": [
+      "Oregon",
+      "Colorado",
+      "Arizona]"
+    ],
+    "correctAnswer": "Oregon"
+  },
+  {
+    "questionForeignKey": "858b2f49-f677-4ac5-af70-e87028b9b826",
+    "answers": [
+      "Basalt",
+      "Granite",
+      "Sandstone]"
+    ],
+    "correctAnswer": "Granite"
+  },
+  {
+    "questionForeignKey": "3884fe92-1dd7-4299-809e-869f620368e3",
+    "answers": [
+      "Santorini",
+      "Stromboli",
+      "Vesuvius]"
+    ],
+    "correctAnswer": "Vesuvius"
+  },
+  {
+    "questionForeignKey": "1a8027bf-a13b-4f25-b3b5-b3689f80d4ac",
+    "answers": [
+      "Caldera",
+      "Crater",
+      "Vent]"
+    ],
+    "correctAnswer": "Caldera"
+  },
+  {
+    "questionForeignKey": "d5db3be7-45ed-485c-8ddc-21640b8e5ecd",
+    "answers": [
+      "Pyroclastic Flow",
+      "Eruption Cloud",
+      "Plinian Eruption]"
+    ],
+    "correctAnswer": "Plinian Eruption"
+  },
+  {
+    "questionForeignKey": "a0562323-237a-47ac-bc8a-fa2ef62cb82a",
+    "answers": [
+      "A circle of active volcanoes around the Pacific Ocean",
+      "A ring of mountains around the Atlantic Ocean",
+      "A volcanic ridge in the Indian Ocean]"
+    ],
+    "correctAnswer": "A circle of active volcanoes around the Pacific Ocean"
+  },
+  {
+    "questionForeignKey": "4283af4c-f8be-4c55-9a5d-aeb794e38765",
+    "answers": [
+      "Carbon Dioxide",
+      "Hydrogen Sulfide",
+      "Water Vapor]"
+    ],
+    "correctAnswer": "Water Vapor"
+  },
+  {
+    "questionForeignKey": "a356ce02-7e9b-4b6c-9a59-b13c1ad8331d",
+    "answers": [
+      "Crater",
+      "Fumarole",
+      "Vent]"
+    ],
+    "correctAnswer": "Fumarole"
+  },
+  {
+    "questionForeignKey": "4b8589dc-2245-46d7-a72e-9278e99c4c23",
+    "answers": [
+      "Pumice",
+      "Tuff",
+      "Rhyolite]"
+    ],
+    "correctAnswer": "Tuff"
+  },
+  {
+    "questionForeignKey": "75db0d92-6444-45a4-8efd-443041d4108d",
+    "answers": [
+      "Magma",
+      "Lava",
+      "Ash]"
+    ],
+    "correctAnswer": "Magma"
+  },
+  {
+    "questionForeignKey": "f60509fa-d63a-4d56-ba8e-428df80fdfb7",
+    "answers": [
+      "Lava Flow",
+      "Lahar",
+      "Pyroclastic Flow]"
+    ],
+    "correctAnswer": "Lahar"
+  },
+  {
+    "questionForeignKey": "82be1ce7-778a-4078-b442-917070e43bfe",
+    "answers": [
+      "Eruption",
+      "Intrusion",
+      "Extrusion]"
+    ],
+    "correctAnswer": "Intrusion"
+  },
+  {
+    "questionForeignKey": "288c1c63-d956-4060-aeb4-1a8f8dd73e83",
+    "answers": [
+      "African Plate",
+      "Pacific Plate",
+      "Nazca Plate]"
+    ],
+    "correctAnswer": "Nazca Plate"
+  },
+  {
+    "questionForeignKey": "0e685e2b-4f29-4fde-8018-1093c86ffda5",
+    "answers": [
+      "Azores",
+      "Faroe Islands",
+      "Canary Islands]"
+    ],
+    "correctAnswer": "Faroe Islands"
+  },
+  {
+    "questionForeignKey": "9702d1d7-7d3a-4992-8181-31c5fea3d6aa",
+    "answers": [
+      "Oxygen",
+      "Carbon Dioxide",
+      "Hydrogen Sulfide]"
+    ],
+    "correctAnswer": "Hydrogen Sulfide"
+  },
+  {
+    "questionForeignKey": "7776e4e5-a14f-4429-ad03-be125379255b",
+    "answers": [
+      "Pahoehoe",
+      "Aa",
+      "Pillow]"
+    ],
+    "correctAnswer": "Aa"
+  },
+  {
+    "questionForeignKey": "bd4ab682-bff5-44d5-979e-a66d07ba1fa2",
+    "answers": [
+      "Shield Volcano",
+      "Stratovolcano",
+      "Cinder Cone]"
+    ],
+    "correctAnswer": "Stratovolcano"
+  },
+  {
+    "questionForeignKey": "f9093024-65f3-4d1f-ba80-495a20973c11",
+    "answers": [
+      "Andesite",
+      "Pumice",
+      "Basalt]"
+    ],
+    "correctAnswer": "Pumice"
+  },
+  {
+    "questionForeignKey": "25288a02-ddd6-4f8a-8df4-67579d1b7ff2",
+    "answers": [
+      "Intrusive Volcanism",
+      "Extrusive Volcanism",
+      "Phreatomagmatic Volcanism]"
+    ],
+    "correctAnswer": "Intrusive Volcanism"
+  },
+  {
+    "questionForeignKey": "bc8f5510-8bb2-4465-a602-2b531b3753ee",
+    "answers": [
+      "Mid-Atlantic Ridge",
+      "Marianas Trench",
+      "Sunda Arc]"
+    ],
+    "correctAnswer": "Mid-Atlantic Ridge"
+  },
+  {
+    "questionForeignKey": "89d725ce-aae6-46ff-8123-808166a8aa99",
+    "answers": [
+      "Mount Shasta",
+      "Yellowstone Caldera",
+      "Mount Rainier]"
+    ],
+    "correctAnswer": "Yellowstone Caldera"
+  },
+  {
+    "questionForeignKey": "18a6db24-1d7a-478d-8417-dbfe72bd1bac",
+    "answers": [
+      "Dormant Volcano",
+      "Extinct Volcano",
+      "Active Volcano]"
+    ],
+    "correctAnswer": "Active Volcano"
+  },
+  {
+    "questionForeignKey": "61c57dc4-244d-42f6-a6f8-e91e3c57851a",
+    "answers": [
+      "Sicily",
+      "Sardinia",
+      "Ischia]"
+    ],
+    "correctAnswer": "Sicily"
+  },
+  {
+    "questionForeignKey": "a3df62ea-d530-489a-a3b7-9c1ccd8cf920",
+    "answers": [
+      "Atlantic Ocean",
+      "Indian Ocean",
+      "Arctic Ocean]"
+    ],
+    "correctAnswer": "Atlantic Ocean"
+  },
+  {
+    "questionForeignKey": "0ec4e3b0-aa10-49be-9edf-7306a59cb3ff",
+    "answers": [
+      "Extinct Volcano",
+      "Inactive Volcano",
+      "Dormant Volcano]"
+    ],
+    "correctAnswer": "Dormant Volcano"
+  },
+  {
+    "questionForeignKey": "c9aeafb5-6413-4339-accd-099cc491b74b",
+    "answers": [
+      "Lava Flow",
+      "Pyroclastic Flow",
+      "Lahar]"
+    ],
+    "correctAnswer": "Pyroclastic Flow"
+  },
+  {
+    "questionForeignKey": "efcb10e5-0af5-4d35-9570-0ad5bed6cf34",
+    "answers": [
+      "Peru",
+      "Ecuador",
+      "Colombia]"
+    ],
+    "correctAnswer": "Ecuador"
+  },
+  {
+    "questionForeignKey": "39d55070-4dc9-43dd-93ea-2618445d6959",
+    "answers": [
+      "Pele",
+      "Hera",
+      "Demeter]"
+    ],
+    "correctAnswer": "Pele"
+  },
+  {
+    "questionForeignKey": "c0d0e4d4-0157-45d6-b599-8d9ceb9a26f3",
+    "answers": [
+      "California",
+      "Idaho",
+      "Arizona]"
+    ],
+    "correctAnswer": "Idaho"
+  },
+  {
+    "questionForeignKey": "aca99f32-3610-4c1a-8db0-6d6262230672",
+    "answers": [
+      "Richter Scale",
+      "Volcanic Explosivity Index (VEI)",
+      "Beaufort Scale]"
+    ],
+    "correctAnswer": "Volcanic Explosivity Index (VEI)"
+  },
+  {
+    "questionForeignKey": "be0aba92-91be-4c9d-8f49-9d3f971ac812",
+    "answers": [
+      "Canada",
+      "United States",
+      "Mexico]"
+    ],
+    "correctAnswer": "United States"
+  },
+  {
+    "questionForeignKey": "f2bf99ec-7b70-495a-b148-b725da1c6b48",
+    "answers": [
+      "Pumice",
+      "Obsidian",
+      "Rhyolite]"
+    ],
+    "correctAnswer": "Rhyolite"
+  }
+]
