@@ -37,11 +37,14 @@ function GamePageContent() {
     const gameEnded = wrongAnswers >= 3 || totalAnswered === 5
 
     if (allQuestions && questionsArray.length === 0 && !gameEnded) {
-      // Get 5 unique random questions (like Vue version)
+      // Shuffle the questions array fresh each time to ensure randomization
+      const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5)
+
+      // Get 5 unique random questions from the shuffled array
       const uniqueQuestions: any[] = []
       const questionTexts = new Set<string>()
 
-      for (const question of allQuestions) {
+      for (const question of shuffledQuestions) {
         if (!questionTexts.has(question.question) && uniqueQuestions.length < 5) {
           questionTexts.add(question.question)
           uniqueQuestions.push(question)
