@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import AnimatedVolcanoBackground from './AnimatedVolcanoBackground'
 
 interface WinScreenProps {
   correctAnswers: number
@@ -7,7 +10,8 @@ interface WinScreenProps {
 
 export default function WinScreen({ correctAnswers, wrongAnswers }: WinScreenProps) {
   return (
-    <section className="min-h-screen flex justify-center items-center bg-stHelensWithPlume text-white w-full bg-cover bg-center p-4 relative">
+    <section className="min-h-screen flex justify-center items-center text-white w-full p-4 relative">
+      <AnimatedVolcanoBackground variant="calm-volcano" intensity="subtle" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50"></div>
       <div className="modern-card p-8 md:p-12 max-w-lg w-full relative z-10 text-center">
         <div className="mb-8">

@@ -19,7 +19,8 @@ function HighScoresContent() {
   }, [])
 
   return (
-    <section className="relative min-h-screen w-full text-center bg-stHelensWithPlume bg-cover bg-center text-white overflow-y-auto">
+    <section className="relative min-h-screen w-full text-center text-white overflow-y-auto">
+      <div className="gradient-mesh-bg"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10 min-h-screen flex flex-col justify-center items-center p-4 md:p-8 py-12">
         <div className="max-w-4xl w-full">

@@ -5,6 +5,7 @@ import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import UpdatePasswordComp from '@/components/UpdatePasswordComp'
 import ScoreHistory from '@/components/ScoreHistory'
 import UserPageButtons from '@/components/UserPageButtons'
+import AnimatedVolcanoBackground from '@/components/AnimatedVolcanoBackground'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { useAuth } from '@/lib/auth'
@@ -66,7 +67,8 @@ function ProfileContent() {
   }
 
   return (
-    <section className="relative min-h-screen w-full text-center text-white bg-activeVolcano bg-cover bg-center overflow-y-auto">
+    <section className="relative min-h-screen w-full text-center text-white overflow-y-auto">
+      <AnimatedVolcanoBackground variant="flowing-lava" intensity="moderate" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10 min-h-screen p-4 md:p-8 py-12">
         <div className="max-w-7xl mx-auto">

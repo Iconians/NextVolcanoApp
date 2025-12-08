@@ -550,6 +550,76 @@ body {
       box-shadow: 0 20px 60px rgba(255, 107, 53, 0.25), 0 0 0 1px rgba(255, 107, 53, 0.2);
     }
   }
+/* CSS-Only Animated Lava Background */
+.animated-lava-bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #0F0F0F 0%, #1A1A1A 50%, #0F0F0F 100%);
+    z-index: -10;
+    overflow: hidden;
+  }
+.animated-lava-bg::before,
+  .animated-lava-bg::after {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(196, 30, 58, 0.3) 0%,
+      rgba(255, 107, 53, 0.2) 25%,
+      rgba(255, 179, 71, 0.15) 50%,
+      transparent 70%
+    );
+    animation: lavaFlow 20s ease-in-out infinite;
+  }
+.animated-lava-bg::before {
+    top: -50%;
+    left: -50%;
+    animation-delay: 0s;
+  }
+.animated-lava-bg::after {
+    bottom: -50%;
+    right: -50%;
+    animation-delay: -10s;
+    transform: rotate(180deg);
+  }
+@keyframes lavaFlow {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+      opacity: 0.6;
+    }
+    33% {
+      transform: translate(10%, -10%) rotate(120deg) scale(1.1);
+      opacity: 0.8;
+    }
+    66% {
+      transform: translate(-10%, 10%) rotate(240deg) scale(0.9);
+      opacity: 0.7;
+    }
+  }
+/* Gradient Mesh Background */
+.gradient-mesh-bg {
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(at 0% 0%, rgba(196, 30, 58, 0.3) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(255, 107, 53, 0.25) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(139, 21, 56, 0.3) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(255, 179, 71, 0.2) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(26, 26, 26, 0.8) 0px, transparent 50%);
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
+    z-index: -10;
+  }
+@keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 /* Modern Card/Glassmorphism */
 .modern-card {
     background: rgba(26, 26, 26, 0.75);
@@ -664,6 +734,9 @@ body {
 .inset-0{
   inset: 0px;
 }
+.-z-10{
+  z-index: -10;
+}
 .z-10{
   z-index: 10;
 }
@@ -737,6 +810,9 @@ body {
 .h-fit{
   height: -moz-fit-content;
   height: fit-content;
+}
+.h-full{
+  height: 100%;
 }
 .max-h-\[500px\]{
   max-height: 500px;
@@ -1425,4 +1501,3 @@ body {
     line-height: 2.5rem;
   }
 }
-

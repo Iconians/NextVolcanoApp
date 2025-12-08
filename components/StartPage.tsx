@@ -78,7 +78,7 @@ export default function StartPage() {
   }
 
   return (
-    <section className="relative min-h-screen w-full bg-volcanoGif bg-cover bg-center text-center overflow-y-auto">
+    <section className="relative min-h-screen w-full text-center overflow-y-auto bg-volcanoGif bg-cover bg-center">
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 py-12">
         {!isCreatingAccount && !isSignedIn && !forgotPassword && !resetPasswordFilledOut && (
