@@ -8,7 +8,6 @@ import { api } from '@/convex/_generated/api'
 import { useEffect, useRef } from 'react'
 
 function HighScoresContent() {
-  // @ts-expect-error - FilterApi type inference issue, queries exist at runtime
   const scores = useQuery(api.queries.highScores.getTopHighScores)
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
 

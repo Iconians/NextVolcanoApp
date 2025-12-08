@@ -219,7 +219,8 @@ function parseProfiles(sql: string) {
         }
       }
     } catch (e) {
-      console.warn(`Failed to parse scores for user ${userId}:`, e.message)
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      console.warn(`Failed to parse scores for user ${userId}:`, errorMessage)
     }
 
     profiles.push({

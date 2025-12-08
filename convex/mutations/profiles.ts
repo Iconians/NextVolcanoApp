@@ -1,6 +1,6 @@
 import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
-import { Profiles } from '../_generated/dataModel'
+import { Doc } from '../_generated/dataModel'
 
 export const updateUserScore = mutation({
   args: {
@@ -13,7 +13,7 @@ export const updateUserScore = mutation({
     const profile = (await ctx.db
       .query('profiles')
       .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first()) as Profiles | null
+      .first()) as Doc<'profiles'> | null
 
     if (!profile) {
       throw new Error('Profile not found')
@@ -54,7 +54,7 @@ export const updateDisplayName = mutation({
     const profile = (await ctx.db
       .query('profiles')
       .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first()) as Profiles | null
+      .first()) as Doc<'profiles'> | null
 
     if (!profile) {
       throw new Error('Profile not found')

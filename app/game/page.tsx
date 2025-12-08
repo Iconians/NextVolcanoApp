@@ -23,7 +23,6 @@ function GamePageContent() {
   const correctSoundRef = useRef<HTMLAudioElement>(null)
   const incorrectSoundRef = useRef<HTMLAudioElement>(null)
 
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const allQuestions = useQuery(api.queries.questions.getRandomQuestions, { count: 100 })
 
   const { postScore, updateHighScore, sortQuestions, displayName, userId } = useGameUtils()
@@ -58,7 +57,6 @@ function GamePageContent() {
 
   // Fetch answers once for all 5 questions using initial IDs (never changes)
   const questionIds = initialQuestions.length > 0 ? initialQuestions.map((q) => q._id) : []
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const answers = useQuery(
     api.queries.answers.getAnswersForQuestions,
     questionIds.length > 0 ? { questionIds } : 'skip'

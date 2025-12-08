@@ -20,7 +20,6 @@ function ProfileContent() {
   console.log('userId', userId)
   console.log('auth', auth)
 
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const profile = useQuery(api.queries.profiles.getProfileByUserId, userId ? { userId } : 'skip')
 
   console.log('profile', profile)

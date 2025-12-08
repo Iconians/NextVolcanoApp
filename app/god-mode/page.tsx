@@ -23,7 +23,6 @@ function GodModeGamePageContent() {
   const correctSoundRef = useRef<HTMLAudioElement>(null)
   const incorrectSoundRef = useRef<HTMLAudioElement>(null)
 
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const allQuestions = useQuery(api.queries.questions.getRandomQuestions, { count: 1000 })
   const { postScore, updateHighScore, sortQuestions, displayName, userId } = useGameUtils()
 
@@ -118,7 +117,6 @@ function GodModeGamePageContent() {
   // Fetch answers when questions are loaded
   const questionIds = questionsArray.length > 0 ? questionsArray.map((q) => q._id) : []
   const answers = useQuery(
-    // @ts-ignore - FilterApi type inference issue, queries exist at runtime
     api.queries.answers.getAnswersForQuestions,
     questionIds.length > 0 ? { questionIds } : 'skip'
   )

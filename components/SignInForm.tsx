@@ -15,7 +15,6 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
   // Generate userId from email to check if profile exists in Convex
   const potentialUserId = email ? generateUserIdFromEmail(email) : null
 
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const profile = useQuery(
     api.queries.profiles.getProfileByUserId,
     potentialUserId ? { userId: potentialUserId } : 'skip'

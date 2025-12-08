@@ -1655,7 +1655,7 @@ export const seedAll = mutation({
 
       await ctx.db.insert('answers', {
         questionId,
-        answers: a.answers,
+        answers: [...a.answers],
         correctAnswer: a.correct_answer
       })
     }

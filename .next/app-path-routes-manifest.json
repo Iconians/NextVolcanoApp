@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/forgot-password/page": "/forgot-password",
+  "/game/page": "/game",
+  "/god-mode/page": "/god-mode",
+  "/high-scores/page": "/high-scores",
+  "/page": "/",
+  "/profile/page": "/profile"
+}

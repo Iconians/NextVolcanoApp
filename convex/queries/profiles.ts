@@ -1,6 +1,6 @@
 import { query } from '../_generated/server'
 import { v } from 'convex/values'
-import { Profiles } from '../_generated/dataModel'
+import { Doc } from '../_generated/dataModel'
 
 export const getProfileByUserId = query({
   args: { userId: v.string() },
@@ -8,7 +8,7 @@ export const getProfileByUserId = query({
     const profile = (await ctx.db
       .query('profiles')
       .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first()) as Profiles | null
+      .first()) as Doc<'profiles'> | null
     return profile
   }
 })
@@ -19,7 +19,7 @@ export const getProfileDisplayName = query({
     const profile = (await ctx.db
       .query('profiles')
       .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first()) as Profiles | null
+      .first()) as Doc<'profiles'> | null
     return profile?.displayName || null
   }
 })

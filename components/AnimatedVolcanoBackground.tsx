@@ -70,7 +70,7 @@ export default function AnimatedVolcanoBackground({
         this.life--
       }
 
-      draw() {
+      draw(ctx: CanvasRenderingContext2D) {
         const alpha = this.life / this.maxLife
         ctx.globalAlpha = alpha
         ctx.fillStyle = `rgb(${this.color.r}, ${this.color.g}, ${this.color.b})`
@@ -101,7 +101,7 @@ export default function AnimatedVolcanoBackground({
         this.size = Math.random() * 4 + 2
       }
 
-      update(time: number) {
+      update(time: number, canvas: HTMLCanvasElement) {
         this.y += this.speed * speed[intensity]
         // Wave motion
         this.x += Math.sin(time * 0.02 + this.waveOffset) * 0.5
@@ -112,7 +112,7 @@ export default function AnimatedVolcanoBackground({
         }
       }
 
-      draw() {
+      draw(ctx: CanvasRenderingContext2D) {
         const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2)
         gradient.addColorStop(
           0,
@@ -194,14 +194,14 @@ export default function AnimatedVolcanoBackground({
 
         // Draw flowing lava particles
         lavaParticles.forEach((particle) => {
-          particle.update(time)
-          particle.draw()
+          particle.update(time, canvas)
+          particle.draw(ctx)
         })
 
         // Draw explosion particles
         particles.forEach((particle) => {
           particle.update()
-          particle.draw()
+          particle.draw(ctx)
           if (particle.isDead()) {
             particle.x = Math.random() * canvas.width
             particle.y = canvas.height * 0.7 + Math.random() * 100
@@ -268,8 +268,8 @@ export default function AnimatedVolcanoBackground({
 
         // Draw horizontal flowing particles
         lavaParticles.forEach((particle) => {
-          particle.update(time)
-          particle.draw()
+          particle.update(time, canvas)
+          particle.draw(ctx)
           if (particle.x > canvas.width + 50) {
             particle.x = -50
             particle.y = canvas.height * 0.7 + (Math.random() - 0.5) * 60
@@ -322,7 +322,7 @@ export default function AnimatedVolcanoBackground({
           particle.update()
           particle.vy *= 0.98 // Much slower
           particle.vx *= 0.98
-          particle.draw()
+          particle.draw(ctx)
           if (particle.isDead() || particle.y < 0) {
             particle.x = Math.random() * canvas.width
             particle.y = canvas.height * 0.7 + Math.random() * 50

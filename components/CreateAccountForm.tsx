@@ -12,12 +12,10 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const { signUp } = useAuthActionsHook()
-  // @ts-ignore - FilterApi type inference issue, mutations exist at runtime
   const createProfile = useMutation(api.mutations.profiles.createProfile)
 
   // Check if account already exists
   const potentialUserId = email ? generateUserIdFromEmail(email) : null
-  // @ts-ignore - FilterApi type inference issue, queries exist at runtime
   const existingProfile = useQuery(
     api.queries.profiles.getProfileByUserId,
     potentialUserId ? { userId: potentialUserId } : 'skip'

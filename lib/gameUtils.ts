@@ -8,12 +8,9 @@ export function useGameUtils() {
   const auth = useAuth()
   const userId = auth?.userId
 
-  // @ts-expect-error - FilterApi type inference issue, mutations exist at runtime
   const updateUserScore = useMutation(api.mutations.profiles.updateUserScore)
-  // @ts-expect-error - FilterApi type inference issue, mutations exist at runtime
   const insertHighScore = useMutation(api.mutations.highScores.insertHighScore)
   const getProfileDisplayName = useQuery(
-    // @ts-expect-error - FilterApi type inference issue, queries exist at runtime
     api.queries.profiles.getProfileDisplayName,
     userId ? { userId } : 'skip'
   )

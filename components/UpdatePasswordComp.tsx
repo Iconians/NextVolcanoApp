@@ -14,7 +14,6 @@ export default function UpdatePasswordComp({ onUpdateUsername }: UpdatePasswordC
   const [newUserName, setNewUserName] = useState('')
   const [formError, setFormError] = useState('')
   const auth = useAuth()
-  // @ts-expect-error - FilterApi type inference issue, mutations exist at runtime
   const updateDisplayName = useMutation(api.mutations.profiles.updateDisplayName)
 
   const handleUpdateUsername = async (e: FormEvent) => {
