@@ -811,8 +811,8 @@ body {
     opacity: 1;
   }
 }
-.animate-fade-in{
-  animation: fadeIn 0.5s ease-in;
+.animate-\[fadeIn_0\.3s_ease-in\]{
+  animation: fadeIn 0.3s ease-in;
 }
 @keyframes slideUp{
 
@@ -826,8 +826,8 @@ body {
     opacity: 1;
   }
 }
-.animate-slide-up{
-  animation: slideUp 0.5s ease-out;
+.animate-\[slideUp_0\.3s_ease-out\]{
+  animation: slideUp 0.3s ease-out;
 }
 .cursor-pointer{
   cursor: pointer;
@@ -1237,6 +1237,26 @@ body {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

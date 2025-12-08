@@ -8,11 +8,11 @@ export default function WarningModal({ isModalOpen, closeModal }: WarningModalPr
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_0.3s_ease-in]"
       onClick={closeModal}
     >
       <div
-        className="modern-card p-8 max-w-md w-full mx-4 animate-slide-up"
+        className="modern-card p-8 max-w-md w-full mx-4 animate-[slideUp_0.3s_ease-out]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6">

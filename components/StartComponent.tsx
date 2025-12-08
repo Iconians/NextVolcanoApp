@@ -44,8 +44,6 @@ export default function StartComponent({ playing, onToggleAudio }: StartComponen
           </Link>
           <button
             className="text-2xl text-volcano-amber cursor-pointer hover:text-volcano-orange transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-volcano-orange focus:ring-offset-2 rounded"
-            onMouseEnter={openModal}
-            onMouseLeave={closeModal}
             onClick={openModal}
             aria-label="Show warning about Master Game"
           >
