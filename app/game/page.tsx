@@ -32,7 +32,11 @@ function GamePageContent() {
   const [initialQuestions, setInitialQuestions] = useState<any[]>([])
 
   useEffect(() => {
-    if (allQuestions && questionsArray.length === 0) {
+    // Only initialize questions if game hasn't ended
+    const totalAnswered = correctAnswers + wrongAnswers
+    const gameEnded = wrongAnswers >= 3 || totalAnswered === 5
+
+    if (allQuestions && questionsArray.length === 0 && !gameEnded) {
       // Get 5 unique random questions (like Vue version)
       const uniqueQuestions: any[] = []
       const questionTexts = new Set<string>()
@@ -47,7 +51,7 @@ function GamePageContent() {
       setQuestionsArray(uniqueQuestions)
       setInitialQuestions(uniqueQuestions) // Store for query
     }
-  }, [allQuestions, questionsArray.length])
+  }, [allQuestions, questionsArray.length, correctAnswers, wrongAnswers])
 
   // Fetch answers once for all 5 questions using initial IDs (never changes)
   const questionIds = initialQuestions.length > 0 ? initialQuestions.map((q) => q._id) : []
@@ -105,8 +109,61 @@ function GamePageContent() {
     // Calculate new scores before updating state
     const newCorrectAnswers = isCorrect ? correctAnswers + 1 : correctAnswers
     const newWrongAnswers = isCorrect ? wrongAnswers : wrongAnswers + 1
+    const totalAnswered = newCorrectAnswers + newWrongAnswers
 
-    // Update state
+    // Check if game is over (3 wrong answers) - MUST check first
+    if (newWrongAnswers === 3) {
+      // Update state immediately
+      if (isCorrect) {
+        setCorrectAnswers(newCorrectAnswers)
+        if (correctSoundRef.current) {
+          correctSoundRef.current.play().catch(() => {})
+        }
+      } else {
+        setWrongAnswers(newWrongAnswers)
+        if (incorrectSoundRef.current) {
+          incorrectSoundRef.current.play().catch(() => {})
+        }
+      }
+      setTimeout(async () => {
+        await postScore(newCorrectAnswers, newWrongAnswers)
+        setQuestionsArray([]) // Clear to show LostScreen
+        // Ensure final state is set
+        setCorrectAnswers(newCorrectAnswers)
+        setWrongAnswers(newWrongAnswers)
+      }, 800)
+      return
+    }
+
+    // Check if won (answered all 5 questions correctly) - MUST check before moving
+    if (totalAnswered === 5 && newWrongAnswers < 3) {
+      // Update state immediately
+      if (isCorrect) {
+        setCorrectAnswers(newCorrectAnswers)
+        if (correctSoundRef.current) {
+          correctSoundRef.current.play().catch(() => {})
+        }
+      } else {
+        setWrongAnswers(newWrongAnswers)
+        if (incorrectSoundRef.current) {
+          incorrectSoundRef.current.play().catch(() => {})
+        }
+      }
+      setTimeout(async () => {
+        await postScore(newCorrectAnswers, newWrongAnswers)
+        // Update high score if player got 4 or more correct (like Vue version)
+        if (newCorrectAnswers >= 4 && displayName) {
+          await updateHighScore(displayName, newCorrectAnswers)
+        }
+        setQuestionsArray([]) // Clear to show WinScreen
+        // Ensure final state is set
+        setCorrectAnswers(newCorrectAnswers)
+        setWrongAnswers(newWrongAnswers)
+      }, 800)
+      return
+    }
+
+    // Update state for continuing game
     if (isCorrect) {
       setCorrectAnswers(newCorrectAnswers)
       if (correctSoundRef.current) {
@@ -119,30 +176,15 @@ function GamePageContent() {
       }
     }
 
-    // Check if game is over (3 wrong answers) - like Vue version
-    if (newWrongAnswers === 3) {
-      setTimeout(async () => {
-        await postScore(newCorrectAnswers, newWrongAnswers)
-        setQuestionsArray([]) // Clear to show LostScreen
-      }, 800)
-      return
-    }
-
-    // Move to next question using sortQuestions (like Vue version)
-    // Only move if we haven't answered 5 questions yet
-    if (questionsArray.length > 0 && newCorrectAnswers + newWrongAnswers < 5) {
-      const newQuestions = [...questionsArray]
-      const newAnswers = [...answerArray]
-      sortQuestions(newQuestions, newAnswers)
-      setQuestionsArray(newQuestions)
-      setAnswerArray(newAnswers)
-    }
-
-    // Check if won (answered all 5 questions correctly) - like Vue version
-    if (newCorrectAnswers + newWrongAnswers === 5 && newWrongAnswers < 3) {
-      setTimeout(async () => {
-        await postScore(newCorrectAnswers, newWrongAnswers)
-        setQuestionsArray([]) // Clear to show WinScreen
+    // Move to next question using sortQuestions - ONLY if game continues
+    // Don't move if we've answered 5 questions or lost
+    if (questionsArray.length > 0 && totalAnswered < 5 && newWrongAnswers < 3) {
+      setTimeout(() => {
+        const newQuestions = [...questionsArray]
+        const newAnswers = [...answerArray]
+        sortQuestions(newQuestions, newAnswers)
+        setQuestionsArray(newQuestions)
+        setAnswerArray(newAnswers)
       }, 800)
     }
 
@@ -157,11 +199,19 @@ function GamePageContent() {
     return <LoadingComponent />
   }
 
+  // Show lose screen if 3 wrong answers
   if (wrongAnswers >= 3) {
     return <LostScreen correctAnswers={correctAnswers} wrongAnswers={wrongAnswers} />
   }
 
-  if (questionsArray.length === 0 && correctAnswers > 0) {
+  // Show win screen if we've answered 5 questions and haven't lost
+  const totalAnswered = correctAnswers + wrongAnswers
+  if (totalAnswered === 5 && wrongAnswers < 3) {
+    return <WinScreen correctAnswers={correctAnswers} wrongAnswers={wrongAnswers} />
+  }
+
+  // Also show win screen if questions array is cleared after winning
+  if (questionsArray.length === 0 && totalAnswered >= 5 && wrongAnswers < 3) {
     return <WinScreen correctAnswers={correctAnswers} wrongAnswers={wrongAnswers} />
   }
 

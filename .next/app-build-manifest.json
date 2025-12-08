@@ -16,6 +16,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/game/page.js"
     ],
+    "/high-scores/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/high-scores/page.js"
+    ],
     "/profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -25,11 +30,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/god-mode/page.js"
-    ],
-    "/high-scores/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/high-scores/page.js"
     ]
   }
 }
