@@ -1,35 +1,36 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import GodModeMainQuestionSection from '@/components/GodModeMainQuestionSection'
 import LostScreen from '@/components/LostScreen'
 import WinScreen from '@/components/WinScreen'
 import LoadingComponent from '@/components/LoadingComponent'
-import { useQuery } from 'convex/react'
-import { api } from '@/convex/_generated/api'
+import { useRandomQuestions, useAnswers } from '@/lib/supabase-queries'
 import { useGameUtils } from '@/lib/gameUtils'
+import type { Question, Answer } from '@/types/game'
 import toast from 'react-hot-toast'
 
 function GodModeGamePageContent() {
-  const [questionsArray, setQuestionsArray] = useState<any[]>([])
-  const [answerArray, setAnswerArray] = useState<any[]>([])
+  const [questionsArray, setQuestionsArray] = useState<Question[]>([])
+  const [answerArray, setAnswerArray] = useState<Answer[]>([])
   const [wrongAnswers, setWrongAnswers] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [loading, setLoading] = useState(true)
   const [answerSubmitted, setAnswerSubmitted] = useState(false)
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
   const correctSoundRef = useRef<HTMLAudioElement>(null)
   const incorrectSoundRef = useRef<HTMLAudioElement>(null)
 
-  const allQuestions = useQuery(api.queries.questions.getRandomQuestions, { count: 1000 })
+  const { questions: allQuestions, loading: questionsLoading } = useRandomQuestions(1000)
   const { postScore, updateHighScore, sortQuestions, displayName, userId } = useGameUtils()
 
   useEffect(() => {
-    if (allQuestions) {
+    if (allQuestions && allQuestions.length > 0) {
       // Get 100 unique questions
-      const uniqueQuestions: any[] = []
+      const uniqueQuestions: Question[] = []
       const questionTexts = new Set<string>()
 
       for (const question of allQuestions) {
@@ -42,6 +43,21 @@ function GodModeGamePageContent() {
       setQuestionsArray(uniqueQuestions)
     }
   }, [allQuestions])
+
+  // Fetch answers for questions
+  const questionIds = questionsArray.length > 0 ? questionsArray.map((q) => q.id) : []
+  const { answers, loading: answersLoading } = useAnswers(questionIds)
+
+  useEffect(() => {
+    if (answers && answers.length > 0 && questionsArray.length > 0) {
+      setAnswerArray(answers)
+      setLoading(false)
+    } else if (questionsLoading || answersLoading) {
+      setLoading(true)
+    } else if (allQuestions && allQuestions.length > 0) {
+      setLoading(false)
+    }
+  }, [answers, questionsArray, allQuestions, questionsLoading, answersLoading])
 
   const playBackgroundMusic = () => {
     if (backgroundMusicRef.current) {
@@ -66,8 +82,8 @@ function GodModeGamePageContent() {
     }
   }
 
-  const findAnswer = (correctAnswer: any[], answer: string) => {
-    const getAnswer = correctAnswer[0].correctAnswer
+  const findAnswer = (correctAnswer: { correct_answer: string }[], answer: string) => {
+    const getAnswer = correctAnswer[0]?.correct_answer
     if (answer === getAnswer) {
       setCorrectAnswers((prev) => prev + 1)
       setAnswerSubmitted(true)
@@ -86,10 +102,14 @@ function GodModeGamePageContent() {
   }
 
   const checkAnswer = async (answer: string) => {
-    const correctAnswer = answerArray.filter((a) => a.questionId === questionsArray[0]?._id)
+    const correctAnswerArray = answerArray.filter(
+      (a) => a.question_foreign_key === questionsArray[0]?.id
+    )
 
-    if (correctAnswer.length > 0) {
-      findAnswer(correctAnswer, answer)
+    if (correctAnswerArray.length > 0) {
+      setSelectedAnswer(answer)
+      setCorrectAnswer(correctAnswerArray[0].correct_answer)
+      findAnswer(correctAnswerArray, answer)
     }
 
     if (wrongAnswers === 10) {
@@ -111,32 +131,10 @@ function GodModeGamePageContent() {
 
     setTimeout(() => {
       setAnswerSubmitted(false)
+      setSelectedAnswer(null)
+      setCorrectAnswer(null)
     }, 800)
   }
-
-  // Fetch answers when questions are loaded
-  const questionIds = questionsArray.length > 0 ? questionsArray.map((q) => q._id) : []
-  const answers = useQuery(
-    api.queries.answers.getAnswersForQuestions,
-    questionIds.length > 0 ? { questionIds } : 'skip'
-  )
-
-  useEffect(() => {
-    if (answers && questionsArray.length > 0) {
-      const shuffledAnswers = [...answers]
-      // Shuffle answers for first question
-      const firstQuestionAnswers = shuffledAnswers.filter(
-        (a) => a.questionId === questionsArray[0]._id
-      )
-      if (firstQuestionAnswers.length > 0) {
-        firstQuestionAnswers[0].answers.sort(() => Math.random() - 0.5)
-      }
-      setAnswerArray(shuffledAnswers)
-      setLoading(false)
-    } else if (questionsArray.length === 0 && allQuestions) {
-      setLoading(false)
-    }
-  }, [answers, questionsArray, allQuestions])
 
   if (loading) {
     return <LoadingComponent />
@@ -152,6 +150,8 @@ function GodModeGamePageContent() {
           correctAnswers={correctAnswers}
           answerClass={answerClass}
           onSubmit={checkAnswer}
+          selectedAnswer={answerSubmitted ? selectedAnswer : null}
+          correctAnswer={answerSubmitted ? correctAnswer : null}
         />
         <audio ref={backgroundMusicRef} src="/lava-loop-3.wav" autoPlay loop />
         <audio ref={correctSoundRef} src="/correct.mp3" />
@@ -172,9 +172,5 @@ function GodModeGamePageContent() {
 }
 
 export default function GodModeGamePage() {
-  return (
-    <ConvexClientProvider>
-      <GodModeGamePageContent />
-    </ConvexClientProvider>
-  )
+  return <GodModeGamePageContent />
 }

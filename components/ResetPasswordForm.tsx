@@ -1,19 +1,36 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useFormStatus } from 'react-dom'
+import { resetPasswordAction, type AuthResult } from '@/lib/auth-actions'
 import toast from 'react-hot-toast'
 
-export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => void }) {
-  const [formError, setFormError] = useState('')
-  const [email, setEmail] = useState('')
+function SubmitButton({ isPending: externalPending }: { isPending: boolean }) {
+  const { pending } = useFormStatus()
+  const isPending = pending || externalPending
 
-  const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault()
-    // Note: Convex auth password reset needs to be implemented
-    // For now, we'll show a success message
-    toast.success('Password reset email sent successfully')
-    onSubmitted()
-  }
+  return (
+    <button className="btn-modern mt-2" type="submit" disabled={isPending}>
+      {isPending ? 'Sending...' : 'Reset Password'}
+    </button>
+  )
+}
+
+export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => void }) {
+  const [state, formAction, isPending] = useActionState<AuthResult | null, FormData>(
+    resetPasswordAction,
+    null
+  )
+
+  // Handle successful password reset
+  useEffect(() => {
+    if (state?.success) {
+      toast.success('Password reset email sent successfully')
+      onSubmitted()
+    } else if (state?.error) {
+      toast.error(state.error)
+    }
+  }, [state, onSubmitted])
 
   return (
     <div className="text-wrapper modern-card p-8 md:p-12 max-w-md w-full mx-auto">
@@ -24,7 +41,7 @@ export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => 
         Please enter your Email to reset your Password
       </p>
       <div>
-        <form onSubmit={handleResetPassword} className="flex flex-col gap-5">
+        <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-300" htmlFor="email">
               Email
@@ -34,19 +51,16 @@ export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => 
               type="email"
               id="email"
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
+              disabled={isPending}
             />
           </div>
-          <button className="btn-modern mt-2" type="submit">
-            Reset Password
-          </button>
+          <SubmitButton isPending={isPending} />
         </form>
-        {formError && (
+        {state?.error && (
           <div className="mt-4 p-3 rounded-lg bg-volcano-red/20 border border-volcano-red/50 text-volcano-red text-sm">
-            {formError}
+            {state.error}
           </div>
         )}
       </div>

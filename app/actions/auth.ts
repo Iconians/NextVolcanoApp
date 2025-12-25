@@ -1,0 +1,130 @@
+'use server'
+
+import { supabaseServer } from '@/lib/supabase-server'
+
+export type AuthResult = {
+  success: boolean
+  error?: string
+  userId?: string
+}
+
+// Helper function to extract error messages
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'An unexpected error occurred'
+}
+
+// Note: For Supabase auth, we use client-side auth functions due to session management requirements
+// This Server Action file is kept for type exports and future server-side operations
+// The actual auth operations remain client-side to properly manage Supabase sessions
+
+export async function signUpAction(
+  prevState: AuthResult | null,
+  formData: FormData
+): Promise<AuthResult> {
+  const email = formData.get('email')?.toString().trim().toLowerCase()
+  const password = formData.get('password')?.toString()
+  const displayName = formData.get('displayName')?.toString()
+
+  if (!email || !password) {
+    return { success: false, error: 'Email and password are required' }
+  }
+
+  // Validate password length
+  if (password.length < 8) {
+    return { success: false, error: 'Password must be at least 8 characters long' }
+  }
+
+  try {
+    const { data, error } = await supabaseServer.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName?.trim().substring(0, 3).toUpperCase() || undefined
+        }
+      }
+    })
+
+    if (error) {
+      let errorMessage = 'Error creating account'
+
+      if (
+        error.message.includes('User already registered') ||
+        error.message.includes('already exists') ||
+        error.message.includes('already registered')
+      ) {
+        errorMessage = 'An account with this email already exists. Please sign in instead.'
+      } else if (
+        error.message.includes('Invalid email') ||
+        error.message.includes('invalid email')
+      ) {
+        errorMessage = 'Please enter a valid email address.'
+      } else if (error.message.length > 0) {
+        errorMessage = error.message
+      }
+
+      return { success: false, error: errorMessage }
+    }
+
+    return { success: true, userId: data.user?.id || undefined }
+  } catch (error) {
+    return { success: false, error: extractErrorMessage(error) }
+  }
+}
+
+export async function signOutAction(): Promise<AuthResult> {
+  try {
+    const { error } = await supabaseServer.auth.signOut()
+    if (error) {
+      return { success: false, error: error.message }
+    }
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: extractErrorMessage(error) }
+  }
+}
+
+export async function resetPasswordAction(
+  prevState: AuthResult | null,
+  formData: FormData
+): Promise<AuthResult> {
+  const email = formData.get('email')?.toString().trim()
+
+  if (!email) {
+    return { success: false, error: 'Email is required' }
+  }
+
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { success: false, error: 'Please enter a valid email address' }
+  }
+
+  try {
+    // Note: resetPasswordForEmail requires the redirect URL
+    // For Server Actions, we need to construct the redirect URL
+    // This will need to be passed or constructed from headers
+    const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password`
+
+    const { error } = await supabaseServer.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl
+    })
+
+    if (error) {
+      let errorMessage = 'Error sending password reset email'
+      if (error.message.includes('User not found') || error.message.includes('Account not found')) {
+        errorMessage = 'No account found with this email address.'
+      } else if (error.message.length > 0) {
+        errorMessage = error.message
+      }
+      return { success: false, error: errorMessage }
+    }
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: extractErrorMessage(error) }
+  }
+}

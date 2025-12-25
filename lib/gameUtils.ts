@@ -1,33 +1,33 @@
-import moment from 'moment'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useAuth } from './auth'
+import { useCurrentUser } from './auth'
+import { useProfileDisplayName } from './supabase-queries'
+import { updateUserScoreDirect, insertHighScoreDirect } from './score-actions'
+import type { Question, Answer } from '@/types/game'
 import toast from 'react-hot-toast'
 
-export function useGameUtils() {
-  const auth = useAuth()
+export function useGameUtils(): {
+  postScore: (correctAnswers: number, wrongAnswers: number) => Promise<void>
+  updateHighScore: (displayName: string | null, correctAnswers: number) => Promise<void>
+  sortQuestions: (questionsArray: Question[], answerArray: Answer[]) => void
+  displayName: string | null
+  userId: string | undefined
+} {
+  const auth = useCurrentUser()
   const userId = auth?.userId
-
-  const updateUserScore = useMutation(api.mutations.profiles.updateUserScore)
-  const insertHighScore = useMutation(api.mutations.highScores.insertHighScore)
-  const getProfileDisplayName = useQuery(
-    api.queries.profiles.getProfileDisplayName,
-    userId ? { userId } : 'skip'
-  )
+  const displayName = useProfileDisplayName(userId || null)
 
   const postScore = async (correctAnswers: number, wrongAnswers: number) => {
-    if (!userId) return
-
-    const timeStamp = moment().format('MMM Do YY')
+    if (!userId) {
+      console.warn('Cannot post score: userId is null')
+      return
+    }
 
     try {
-      await updateUserScore({
-        userId,
-        correctAnswers,
-        wrongAnswers,
-        timeStamp
-      })
-      toast.success('Score updated')
+      const result = await updateUserScoreDirect(userId, correctAnswers, wrongAnswers)
+      if (result.success) {
+        toast.success('Score updated')
+      } else {
+        toast.error(result.error || 'Error posting score')
+      }
     } catch (error) {
       console.error('Error posting score:', error)
       toast.error('Error posting score')
@@ -38,29 +38,30 @@ export function useGameUtils() {
     if (!displayName) return
 
     try {
-      await insertHighScore({
-        userName: displayName,
-        score: correctAnswers
-      })
+      await insertHighScoreDirect(displayName, correctAnswers)
     } catch (error) {
       console.error('Error updating high score:', error)
     }
   }
 
-  const sortQuestions = (questionsArray: any[], answerArray: any[]) => {
+  const sortQuestions = (questionsArray: Question[], answerArray: Answer[]) => {
     questionsArray.shift()
-    answerArray.forEach((a) => {
-      if (questionsArray.length > 0 && a.questionId === questionsArray[0]._id) {
-        a.answers.sort(() => Math.random() - 0.5)
+    // Shuffle answers for the next question (answers are already shuffled on initial load)
+    const nextQuestionId = questionsArray[0]?.id
+    if (nextQuestionId) {
+      const nextAnswer = answerArray.find((a) => a.question_foreign_key === nextQuestionId)
+      if (nextAnswer && nextAnswer.answers) {
+        // Only shuffle if not already shuffled (optimization)
+        nextAnswer.answers.sort(() => Math.random() - 0.5)
       }
-    })
+    }
   }
 
   return {
     postScore,
     updateHighScore,
     sortQuestions,
-    displayName: getProfileDisplayName,
+    displayName: displayName || null,
     userId
   }
 }

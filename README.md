@@ -41,11 +41,34 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ## Technologies
 
-- **Next.js 14+:** React framework with App Router for building the application.
+- **Next.js 16+:** React framework with App Router for building the application.
+- **React 19:** Latest React version with modern hooks and features.
 - **TypeScript:** Type-safe JavaScript for better development experience.
 - **Tailwind CSS:** Utility-first CSS framework for styling.
-- **Convex:** Backend platform for handling user authentication and storing quiz data.
-- **React:** Frontend library for building interactive user interfaces.
+- **Supabase:** Backend platform for handling user authentication and storing quiz data in PostgreSQL.
+
+## Modern Features
+
+This application showcases modern React 19 and Next.js 16 features:
+
+### React 19 Hooks
+
+- **`useActionState`**: Modern form state management in all authentication and profile forms (SignIn, CreateAccount, ResetPassword, UpdateUsername). Replaces manual `useState` + `useEffect` patterns for cleaner, more declarative form handling.
+- **`useFormStatus`**: Provides submission status without prop drilling in form components.
+- **`useOptimistic`**: Immediate UI updates for username changes before server confirmation, providing instant feedback.
+- **`useTransition`**: Smooth state transitions during game state updates, preventing UI blocking during non-urgent updates.
+
+### Next.js 16 Features
+
+- **Server Components**: High scores page uses Server Components for optimal data fetching and SEO.
+- **Server Actions**: Secure server-side mutations for scores and profile updates, keeping credentials on the server.
+- **Dynamic Metadata**: Page-specific metadata exports for improved SEO on game, profile, and high-scores pages.
+- **App Router**: Modern routing with improved performance and developer experience.
+
+### Other Modern Improvements
+
+- **Native Date Formatting**: Replaced `moment.js` with native `Intl.DateTimeFormat` for smaller bundle size and better performance.
+- **TypeScript Improvements**: Shared type definitions in `types/game.ts` for better type safety across components.
 
 ## Data Model
 
@@ -53,11 +76,11 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ```json
 {
-  "_id": "Id<\"answers\">",
-  "questionId": "Id<\"questions\">",
+  "id": "uuid",
+  "question_foreign_key": "uuid",
   "answers": ["answer1", "answer2", "answer3"],
-  "correctAnswer": "text",
-  "_creationTime": 1234567890
+  "correct_answer": "text",
+  "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -65,10 +88,10 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ```json
 {
-  "_id": "Id<\"highScores\">",
-  "userName": "text",
+  "id": "int8",
+  "user_name": "text",
   "score": 5,
-  "_creationTime": 1234567890
+  "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -76,17 +99,17 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ```json
 {
-  "_id": "Id<\"profiles\">",
-  "userId": "string",
-  "displayName": "text",
-  "scores": [
+  "id": "int8",
+  "user_id": "uuid",
+  "display_name": "text",
+  "score": [
     {
       "correct": 3,
       "incorrect": 2,
-      "timeStamp": "MMM Do YY"
+      "time_stamp": "MMM Do YY"
     }
   ],
-  "_creationTime": 1234567890
+  "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -94,43 +117,53 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ```json
 {
-  "_id": "Id<\"questions\">",
+  "id": "uuid",
   "question": "text",
-  "_creationTime": 1234567890
+  "created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
 ### Getting Started
 
-1 Clone the repository.
+1. Clone the repository.
 
 ```bash
 git clone https://github.com/Iconians/volcanoTriviaApp.git
 ```
 
-2 Install dependencies.
+2. Install dependencies.
 
 ```bash
 npm i
 ```
 
-3 Set up Convex.
+3. Set up Supabase.
+
+   - Create a Supabase project at [supabase.com](https://supabase.com)
+   - Create the following tables: `questions`, `answers`, `profile`, `high_score`
+   - Get your Supabase URL and anon key from the project settings
+   - Create a `.env.local` file with:
 
 ```bash
-npx convex dev
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-This will create a `.env.local` file with your Convex deployment URL. Make sure `NEXT_PUBLIC_CONVEX_URL` is set.
-
-4 Run the application.
+4. Run the application.
 
 ```bash
 npm run dev
 ```
 
-5 Visit [http://localhost:3000](http://localhost:3000) in your browser.
+5. Run the application.
 
-visit the site here [live site](https://volcano-trivia-app.vercel.app/)
+```bash
+npm run dev
+```
+
+6. Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+Visit the site here: [live site](https://volcano-trivia-app.vercel.app/)
 
 ## Future Plans
 

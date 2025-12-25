@@ -2,16 +2,20 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useAuthActionsHook } from '@/lib/auth'
 
 export default function UserPageButtons() {
   const router = useRouter()
+  const { signOut } = useAuthActionsHook()
 
   const handleSignOut = async () => {
-    // Clear any stored user data
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user')
+    try {
+      await signOut()
+      router.push('/')
+    } catch (error) {
+      console.error('Error signing out:', error)
+      router.push('/')
     }
-    router.push('/')
   }
 
   return (

@@ -1,21 +1,32 @@
-'use client'
-
-import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import ScoresComp from '@/components/ScoresComp'
 import Link from 'next/link'
-import { useQuery } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useEffect, useRef } from 'react'
+import { supabaseServer } from '@/lib/supabase-server'
+import { HighScore } from '@/lib/supabase-queries'
+import HighScoresClient from './HighScoresClient'
+import type { Metadata } from 'next'
 
-function HighScoresContent() {
-  const scores = useQuery(api.queries.highScores.getTopHighScores)
-  const backgroundMusicRef = useRef<HTMLAudioElement>(null)
+export const metadata: Metadata = {
+  title: 'High Scores | Volcano Trivia',
+  description: 'View the top scores in Volcano Trivia! See who has mastered the art of volcanology.'
+}
 
-  useEffect(() => {
-    if (backgroundMusicRef.current) {
-      backgroundMusicRef.current.play()
-    }
-  }, [])
+async function getHighScores(limit: number = 10): Promise<HighScore[]> {
+  const { data, error } = await supabaseServer
+    .from('high_score')
+    .select('*')
+    .order('score', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('Error fetching high scores:', error)
+    return []
+  }
+
+  return data || []
+}
+
+export default async function HighScoresPage() {
+  const scores = await getHighScores(10)
 
   return (
     <section className="relative min-h-screen w-full text-center text-white overflow-y-auto">
@@ -29,7 +40,7 @@ function HighScoresContent() {
             </h1>
           </div>
           <div className="mb-8">
-            <ScoresComp scores={scores || []} />
+            <ScoresComp scores={scores} />
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/" className="btn-modern text-center min-w-[150px]">
@@ -41,15 +52,7 @@ function HighScoresContent() {
           </div>
         </div>
       </div>
-      <audio ref={backgroundMusicRef} src="/lava-loop-3.wav" autoPlay loop />
+      <HighScoresClient />
     </section>
-  )
-}
-
-export default function HighScoresPage() {
-  return (
-    <ConvexClientProvider>
-      <HighScoresContent />
-    </ConvexClientProvider>
   )
 }

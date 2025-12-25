@@ -4,18 +4,7 @@ import { useEffect, useRef } from 'react'
 import QuestionForm from './QuestionForm'
 import HeartsContainer from './HeartsContainer'
 import GameStatistics from './GameStatistics'
-
-interface Question {
-  _id: string
-  question: string
-}
-
-interface Answer {
-  _id: string
-  questionId: string
-  answers: string[]
-  correctAnswer: string
-}
+import type { Question, Answer } from '@/types/game'
 
 interface MainQuestionSectionProps {
   questionsArray: Question[]
@@ -24,6 +13,8 @@ interface MainQuestionSectionProps {
   correctAnswers: number
   answerClass: string
   onSubmit: (answer: string) => void
+  selectedAnswer: string | null
+  correctAnswer: string | null
 }
 
 export default function MainQuestionSection({
@@ -32,7 +23,9 @@ export default function MainQuestionSection({
   wrongAnswers,
   correctAnswers,
   answerClass,
-  onSubmit
+  onSubmit,
+  selectedAnswer,
+  correctAnswer
 }: MainQuestionSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -74,6 +67,8 @@ export default function MainQuestionSection({
             questionsArray={questionsArray}
             answerArray={answerArray}
             onSubmit={onSubmit}
+            selectedAnswer={selectedAnswer}
+            correctAnswer={correctAnswer}
           />
         </div>
       </div>
