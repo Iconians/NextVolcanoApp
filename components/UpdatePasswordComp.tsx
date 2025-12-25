@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useAuth } from '@/lib/auth'
+import { updateDisplayName } from '@/lib/supabase-mutations'
+import { useCurrentUser } from '@/lib/auth'
 import toast from 'react-hot-toast'
 
 interface UpdatePasswordCompProps {
@@ -13,8 +12,7 @@ interface UpdatePasswordCompProps {
 export default function UpdatePasswordComp({ onUpdateUsername }: UpdatePasswordCompProps) {
   const [newUserName, setNewUserName] = useState('')
   const [formError, setFormError] = useState('')
-  const auth = useAuth()
-  const updateDisplayName = useMutation(api.mutations.profiles.updateDisplayName)
+  const auth = useCurrentUser()
 
   const handleUpdateUsername = async (e: FormEvent) => {
     e.preventDefault()
@@ -24,11 +22,13 @@ export default function UpdatePasswordComp({ onUpdateUsername }: UpdatePasswordC
       return
     }
 
+    if (!newUserName) {
+      toast.error('Username is required')
+      return
+    }
+
     try {
-      await updateDisplayName({
-        userId: auth.userId,
-        displayName: newUserName
-      })
+      await updateDisplayName(auth.userId, newUserName.substring(0, 3).toUpperCase())
 
       toast.success('Username updated')
       onUpdateUsername(newUserName)

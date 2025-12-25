@@ -1,28 +1,60 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import UpdatePasswordComp from '@/components/UpdatePasswordComp'
 import ScoreHistory from '@/components/ScoreHistory'
 import UserPageButtons from '@/components/UserPageButtons'
 import AnimatedVolcanoBackground from '@/components/AnimatedVolcanoBackground'
-import { useQuery } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useAuth } from '@/lib/auth'
+import { useProfileByUserId } from '@/lib/supabase-queries'
+import { createProfile, ensureProfile } from '@/lib/supabase-mutations'
+import { useCurrentUser } from '@/lib/auth'
 
 function ProfileContent() {
   const [userName, setUserName] = useState('')
   const [userScore, setUserScore] = useState<any[]>([])
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
-  const auth = useAuth()
+  const auth = useCurrentUser()
   const userId = auth?.userId
 
-  console.log('userId', userId)
-  console.log('auth', auth)
+  const { profile, loading: profileLoading } = useProfileByUserId(userId || null)
 
-  const profile = useQuery(api.queries.profiles.getProfileByUserId, userId ? { userId } : 'skip')
+  // Auto-create profile if user is authenticated but profile doesn't exist
+  useEffect(() => {
+    let isMounted = true
+    let profileCreationAttempted = false
 
-  console.log('profile', profile)
+    const ensureProfileExists = async () => {
+      // Prevent multiple attempts
+      if (profileCreationAttempted) return
+
+      // Wait for profile query to complete
+      if (profileLoading) return
+
+      if (userId && profile === null && isMounted) {
+        profileCreationAttempted = true
+
+        try {
+          // Create profile with default display name
+          await ensureProfile(userId, 'USR')
+          console.log('Profile auto-created on profile page visit')
+        } catch (error) {
+          console.error('Could not auto-create profile on profile page:', error)
+        }
+      }
+    }
+
+    // Check after a brief delay
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        ensureProfileExists()
+      }
+    }, 1000)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [userId, profile, profileLoading])
 
   useEffect(() => {
     // Handle audio autoplay - browsers require user interaction first
@@ -42,18 +74,27 @@ function ProfileContent() {
 
   useEffect(() => {
     if (profile) {
-      setUserName(profile.displayName)
-      if (profile.scores) {
-        const parsedScores = profile.scores
+      setUserName(profile.display_name || 'USR')
+      if (profile.score) {
+        const parsedScores = profile.score
           .map((score: any) => {
+            // Supabase stores scores as objects with time_stamp, convert to timeStamp for component
             if (typeof score === 'string') {
               try {
-                return JSON.parse(score)
+                const parsed = JSON.parse(score)
+                return {
+                  ...parsed,
+                  timeStamp: parsed.time_stamp || parsed.timeStamp
+                }
               } catch {
                 return score
               }
             }
-            return score
+            // Convert time_stamp to timeStamp for component compatibility
+            return {
+              ...score,
+              timeStamp: score.time_stamp || score.timeStamp
+            }
           })
           .filter(Boolean)
         setUserScore(parsedScores.slice().reverse())
@@ -93,9 +134,5 @@ function ProfileContent() {
 }
 
 export default function ProfilePage() {
-  return (
-    <ConvexClientProvider>
-      <ProfileContent />
-    </ConvexClientProvider>
-  )
+  return <ProfileContent />
 }

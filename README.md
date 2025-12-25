@@ -41,7 +41,7 @@ Welcome to the Volcano Trivia App! Are you smart enough to be a volcanologist? T
 
 ## Technologies
 
-- **Next.js 14+:** React framework with App Router for building the application.
+- **Next.js 16+:** React framework with App Router for building the application.
 - **TypeScript:** Type-safe JavaScript for better development experience.
 - **Tailwind CSS:** Utility-first CSS framework for styling.
 - **Convex:** Backend platform for handling user authentication and storing quiz data.

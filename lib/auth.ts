@@ -1,52 +1,87 @@
 'use client'
 
-// Placeholder auth hooks - replace with proper Convex auth when available
-export function useAuth() {
-  if (typeof window !== 'undefined') {
-    const user = localStorage.getItem('user')
-    return user ? JSON.parse(user) : null
-  }
-  return null
+import { useEffect, useState } from 'react'
+import { useSupabase } from '@/components/SupabaseProvider'
+import { supabase } from '@/lib/supabase'
+import { User } from '@supabase/supabase-js'
+
+// Auth hook - returns the current authenticated user
+export function useCurrentUser() {
+  const { user, loading } = useSupabase()
+  return user ? { userId: user.id } : null
 }
 
-// Generate consistent userId from email (same email = same userId)
-export function generateUserIdFromEmail(email: string): string {
-  // Simple hash function to create consistent userId
-  let hash = 0
-  for (let i = 0; i < email.length; i++) {
-    const char = email.charCodeAt(i)
-    hash = (hash << 5) - hash + char
-    hash = hash & hash // Convert to 32bit integer
+// Helper function to extract error messages
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
   }
-  return `user_${Math.abs(hash)}`
+  return 'An unexpected error occurred'
 }
 
+// Auth actions hook - provides sign in, sign up, and sign out functions
 export function useAuthActionsHook() {
   return {
-    signIn: async (provider: string, options: { email: string; password: string }) => {
-      // Generate consistent userId based on email
-      if (typeof window !== 'undefined') {
-        const userId = generateUserIdFromEmail(options.email)
-        const user = { userId, email: options.email }
-        localStorage.setItem('user', JSON.stringify(user))
-        return { userId }
+    signIn: async (
+      provider: string,
+      options: { email: string; password: string; flow?: 'signIn' | 'signUp' }
+    ) => {
+      try {
+        const email = options.email.trim().toLowerCase()
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password: options.password
+        })
+
+        if (error) throw error
+        return { userId: data.user?.id || null }
+      } catch (error) {
+        const message = extractErrorMessage(error)
+        throw new Error(message)
       }
-      return null
     },
-    signUp: async (provider: string, options: { email: string; password: string }) => {
-      // Generate consistent userId based on email
-      if (typeof window !== 'undefined') {
-        const userId = generateUserIdFromEmail(options.email)
-        const user = { userId, email: options.email }
-        localStorage.setItem('user', JSON.stringify(user))
-        return { userId }
+    signUp: async (
+      provider: string,
+      options: { email: string; password: string; displayName?: string }
+    ) => {
+      try {
+        // Validate password length
+        if (options.password.length < 8) {
+          throw new Error('Password must be at least 8 characters long')
+        }
+
+        const email = options.email.trim().toLowerCase()
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password: options.password,
+          options: {
+            data: {
+              display_name: options.displayName?.trim().substring(0, 3).toUpperCase() || undefined
+            }
+          }
+        })
+
+        if (error) throw error
+        return { userId: data.user?.id || null }
+      } catch (error) {
+        const message = extractErrorMessage(error)
+        throw new Error(message)
       }
-      return null
     },
     signOut: async () => {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('user')
+      try {
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
+      } catch (error) {
+        // Log but don't throw - sign out should always succeed
+        console.error('Error signing out:', error)
       }
     }
   }
+}
+
+// Helper function to get current user ID - can be used in components
+export function useCurrentUserId() {
+  const { user } = useSupabase()
+  return user?.id || null
 }

@@ -6,8 +6,11 @@ import CreateAccountForm from './CreateAccountForm'
 import StartComponent from './StartComponent'
 import ResetPasswordForm from './ResetPasswordForm'
 import ForgotPasswordSplashComponent from './ForgotPasswordSplashComponent'
-import { useAuth } from '@/lib/auth'
+import { useCurrentUser } from '@/lib/auth'
+import { useSupabase } from '@/components/SupabaseProvider'
 import LoadingComponent from './LoadingComponent'
+import { useProfileByUserId } from '@/lib/supabase-queries'
+import { ensureProfile, updateDisplayName } from '@/lib/supabase-mutations'
 
 export default function StartPage() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
@@ -17,14 +20,99 @@ export default function StartPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [resetPasswordFilledOut, setResetPasswordFilledOut] = useState(false)
   const volcanoBackgroundRef = useRef<HTMLAudioElement>(null)
-  const auth = useAuth()
+  const auth = useCurrentUser()
+  const { loading: authLoading } = useSupabase()
+  const { profile, loading: profileLoading } = useProfileByUserId(auth?.userId || null)
+
+  // Auto-create profile after signup when auth becomes available
+  useEffect(() => {
+    let isMounted = true
+    let profileCreationAttempted = false
+
+    const ensureProfileExists = async () => {
+      // Prevent multiple attempts
+      if (profileCreationAttempted) return
+
+      // Wait for profile query to complete
+      if (profileLoading) return
+
+      // Check for pending display name from localStorage (set during account creation)
+      const storedDisplayName =
+        typeof window !== 'undefined' ? localStorage.getItem('pendingDisplayName') : null
+
+      const currentUserId = auth?.userId
+
+      // If we have a profile and it has the default display name, update it
+      if (
+        currentUserId &&
+        profile &&
+        profile.display_name === 'USR' &&
+        storedDisplayName &&
+        isMounted
+      ) {
+        profileCreationAttempted = true
+
+        try {
+          const displayNameToUse = storedDisplayName.substring(0, 3).toUpperCase()
+          await updateDisplayName(currentUserId, displayNameToUse)
+          console.log('✅ Profile display name updated to:', displayNameToUse)
+          if (isMounted && typeof window !== 'undefined') {
+            localStorage.removeItem('pendingDisplayName')
+          }
+        } catch (error) {
+          if (!isMounted) return
+          console.error('Error updating profile display name:', error)
+        }
+      }
+
+      // Fallback: If profile doesn't exist, create one
+      if (currentUserId && profile === null && storedDisplayName && isMounted) {
+        profileCreationAttempted = true
+
+        try {
+          const displayNameToUse = storedDisplayName.substring(0, 3).toUpperCase()
+          await ensureProfile(currentUserId, displayNameToUse)
+          console.log('✅ Profile created via StartPage with displayName:', displayNameToUse)
+          if (isMounted && typeof window !== 'undefined') {
+            localStorage.removeItem('pendingDisplayName')
+          }
+        } catch (error) {
+          if (!isMounted) return
+          console.error('Error creating profile in StartPage:', error)
+        }
+      }
+    }
+
+    // Check after a brief delay to avoid race conditions
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        ensureProfileExists()
+      }
+    }, 1500)
+
+    // Also check immediately
+    ensureProfileExists()
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [auth?.userId, profile, profileLoading])
 
   useEffect(() => {
-    if (auth !== undefined) {
-      setIsSignedIn(!!auth)
-      setLoading(false)
+    // Set loading based on auth state
+    setLoading(authLoading)
+
+    // Sync auth state
+    if (auth) {
+      setIsSignedIn(true)
+      if (isCreatingAccount) {
+        setIsCreatingAccount(false)
+      }
+    } else if (!isCreatingAccount && !authLoading) {
+      setIsSignedIn(false)
     }
-  }, [auth])
+  }, [auth, isCreatingAccount, authLoading])
 
   const handleAccountCreated = () => {
     setIsCreatingAccount(false)

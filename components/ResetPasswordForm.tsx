@@ -6,13 +6,56 @@ import toast from 'react-hot-toast'
 export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => void }) {
   const [formError, setFormError] = useState('')
   const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault()
-    // Note: Convex auth password reset needs to be implemented
-    // For now, we'll show a success message
-    toast.success('Password reset email sent successfully')
-    onSubmitted()
+    setFormError('')
+    setIsLoading(true)
+
+    if (!email) {
+      setFormError('Email is required')
+      setIsLoading(false)
+      return
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setFormError('Please enter a valid email address')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const { supabase } = await import('@/lib/supabase')
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo:
+          typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined
+      })
+
+      if (error) throw error
+
+      toast.success('Password reset email sent successfully')
+      onSubmitted()
+    } catch (error: unknown) {
+      let errorMessage = 'Error sending password reset email'
+
+      if (error instanceof Error) {
+        const message = error.message
+
+        if (message.includes('User not found') || message.includes('Account not found')) {
+          errorMessage = 'No account found with this email address.'
+        } else if (message.length > 0) {
+          errorMessage = message
+        }
+      }
+
+      setFormError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -40,8 +83,8 @@ export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => 
               required
             />
           </div>
-          <button className="btn-modern mt-2" type="submit">
-            Reset Password
+          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
+            {isLoading ? 'Sending...' : 'Reset Password'}
           </button>
         </form>
         {formError && (

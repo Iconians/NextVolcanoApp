@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { useAuthActionsHook, generateUserIdFromEmail } from '@/lib/auth'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
+import { useAuthActionsHook } from '@/lib/auth'
 import toast from 'react-hot-toast'
 
 export default function CreateAccountForm({ onAccountCreated }: { onAccountCreated: () => void }) {
@@ -11,55 +9,54 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { signUp } = useAuthActionsHook()
-  const createProfile = useMutation(api.mutations.profiles.createProfile)
-
-  // Check if account already exists
-  const potentialUserId = email ? generateUserIdFromEmail(email) : null
-  const existingProfile = useQuery(
-    api.queries.profiles.getProfileByUserId,
-    potentialUserId ? { userId: potentialUserId } : 'skip'
-  )
 
   const handleCreateAccount = async (e: FormEvent) => {
     e.preventDefault()
     setFormError('')
+    setIsLoading(true)
 
-    if (!email || !displayName) {
-      setFormError('Email and username are required')
-      return
-    }
-
-    // Wait for profile check to complete
-    if (existingProfile === undefined) {
-      setFormError('Checking if account exists...')
-      return
-    }
-
-    // Check if account already exists
-    if (existingProfile !== null) {
-      setFormError('An account with this email already exists. Please sign in instead.')
-      toast.error('Account already exists')
+    if (!email || !displayName || !password) {
+      setFormError('Email, username, and password are required')
+      setIsLoading(false)
       return
     }
 
     try {
-      const result = await signUp('password', { email, password })
+      await signUp('password', { email, password, displayName })
+      toast.success('Account created successfully!')
+      setIsLoading(false)
+      onAccountCreated()
+    } catch (error: unknown) {
+      let errorMessage = 'Error creating account'
 
-      if (result && result.userId && displayName) {
-        await createProfile({
-          userId: result.userId,
-          displayName: displayName.substring(0, 3).toUpperCase() // Ensure max 3 chars
-        })
-        toast.success('Account created successfully')
-        onAccountCreated()
-      } else {
-        toast.error('Failed to create account')
-        setFormError('Failed to create account')
+      if (error instanceof Error) {
+        const message = error.message
+
+        // Handle specific Supabase auth errors
+        if (
+          message.includes('User already registered') ||
+          message.includes('already exists') ||
+          message.includes('already registered')
+        ) {
+          errorMessage = 'An account with this email already exists. Please sign in instead.'
+        } else if (message.includes('Invalid email') || message.includes('invalid email')) {
+          errorMessage = 'Please enter a valid email address.'
+        } else if (
+          message.includes('Password') ||
+          message.includes('password') ||
+          message.includes('at least 8 characters')
+        ) {
+          errorMessage = 'Password must be at least 8 characters long.'
+        } else if (message.length > 0) {
+          errorMessage = message || 'Error creating account. Please try again.'
+        }
       }
-    } catch (error: any) {
-      setFormError(error.message || 'Error creating account')
-      toast.error('Error creating account')
+
+      setFormError(errorMessage)
+      toast.error(errorMessage)
+      setIsLoading(false)
     }
   }
 
@@ -119,12 +116,8 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
               required
             />
           </div>
-          <button
-            className="btn-modern mt-2"
-            type="submit"
-            disabled={existingProfile === undefined && email !== ''}
-          >
-            {existingProfile === undefined && email !== '' ? 'Checking...' : 'Create Account'}
+          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
         {formError && (

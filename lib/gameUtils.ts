@@ -1,32 +1,24 @@
 import moment from 'moment'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useAuth } from './auth'
+import { useCurrentUser } from './auth'
+import { useProfileDisplayName } from './supabase-queries'
+import { updateUserScore, insertHighScore } from './supabase-mutations'
 import toast from 'react-hot-toast'
 
 export function useGameUtils() {
-  const auth = useAuth()
+  const auth = useCurrentUser()
   const userId = auth?.userId
-
-  const updateUserScore = useMutation(api.mutations.profiles.updateUserScore)
-  const insertHighScore = useMutation(api.mutations.highScores.insertHighScore)
-  const getProfileDisplayName = useQuery(
-    api.queries.profiles.getProfileDisplayName,
-    userId ? { userId } : 'skip'
-  )
+  const displayName = useProfileDisplayName(userId || null)
 
   const postScore = async (correctAnswers: number, wrongAnswers: number) => {
-    if (!userId) return
+    if (!userId) {
+      console.warn('Cannot post score: userId is null')
+      return
+    }
 
     const timeStamp = moment().format('MMM Do YY')
 
     try {
-      await updateUserScore({
-        userId,
-        correctAnswers,
-        wrongAnswers,
-        timeStamp
-      })
+      await updateUserScore(userId, correctAnswers, wrongAnswers, timeStamp)
       toast.success('Score updated')
     } catch (error) {
       console.error('Error posting score:', error)
@@ -38,10 +30,7 @@ export function useGameUtils() {
     if (!displayName) return
 
     try {
-      await insertHighScore({
-        userName: displayName,
-        score: correctAnswers
-      })
+      await insertHighScore(displayName, correctAnswers)
     } catch (error) {
       console.error('Error updating high score:', error)
     }
@@ -50,7 +39,7 @@ export function useGameUtils() {
   const sortQuestions = (questionsArray: any[], answerArray: any[]) => {
     questionsArray.shift()
     answerArray.forEach((a) => {
-      if (questionsArray.length > 0 && a.questionId === questionsArray[0]._id) {
+      if (questionsArray.length > 0 && a.question_foreign_key === questionsArray[0]?.id) {
         a.answers.sort(() => Math.random() - 0.5)
       }
     })
@@ -60,7 +49,7 @@ export function useGameUtils() {
     postScore,
     updateHighScore,
     sortQuestions,
-    displayName: getProfileDisplayName,
+    displayName: displayName || null,
     userId
   }
 }

@@ -1,15 +1,15 @@
 'use client'
 
 interface Question {
-  _id: string
+  id: string
   question: string
 }
 
 interface Answer {
-  _id: string
-  questionId: string
+  id: string
+  question_foreign_key: string
   answers: string[]
-  correctAnswer: string
+  correct_answer: string
 }
 
 interface QuestionFormProps {
@@ -22,7 +22,7 @@ export default function QuestionForm({ questionsArray, answerArray, onSubmit }: 
   if (questionsArray.length === 0) return null
 
   const currentQuestion = questionsArray[0]
-  const currentAnswers = answerArray.filter((a) => a.questionId === currentQuestion._id)
+  const currentAnswers = answerArray.filter((a) => a.question_foreign_key === currentQuestion.id)
 
   if (currentAnswers.length === 0) return null
 

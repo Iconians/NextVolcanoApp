@@ -6,15 +6,15 @@ import HeartsContainer from './HeartsContainer'
 import GameStatistics from './GameStatistics'
 
 interface Question {
-  _id: string
+  id: string
   question: string
 }
 
 interface Answer {
-  _id: string
-  questionId: string
+  id: string
+  question_foreign_key: string
   answers: string[]
-  correctAnswer: string
+  correct_answer: string
 }
 
 interface MainQuestionSectionProps {

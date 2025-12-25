@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as convex_seed from "../convex_seed.js";
 import type * as migrations_importData from "../migrations/importData.js";
 import type * as mutations_highScores from "../mutations/highScores.js";
@@ -24,6 +25,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   convex_seed: typeof convex_seed;
   "migrations/importData": typeof migrations_importData;
   "mutations/highScores": typeof mutations_highScores;

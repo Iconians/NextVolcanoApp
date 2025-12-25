@@ -1,59 +1,120 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
-import { useAuthActionsHook, generateUserIdFromEmail } from '@/lib/auth'
-import { useQuery } from 'convex/react'
-import { api } from '@/convex/_generated/api'
+import { useState, FormEvent, useEffect } from 'react'
+import { useAuthActionsHook, useCurrentUser } from '@/lib/auth'
+import { useProfileByUserId } from '@/lib/supabase-queries'
+import { ensureProfile } from '@/lib/supabase-mutations'
 import toast from 'react-hot-toast'
 
 export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
   const [formError, setFormError] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { signIn } = useAuthActionsHook()
+  const auth = useCurrentUser()
+  const { profile, loading: profileLoading } = useProfileByUserId(auth?.userId || null)
 
-  // Generate userId from email to check if profile exists in Convex
-  const potentialUserId = email ? generateUserIdFromEmail(email) : null
+  // Auto-create profile if user is signed in but profile doesn't exist
+  useEffect(() => {
+    let isMounted = true
+    let profileCreationAttempted = false
 
-  const profile = useQuery(
-    api.queries.profiles.getProfileByUserId,
-    potentialUserId ? { userId: potentialUserId } : 'skip'
-  )
+    const ensureProfileExists = async () => {
+      // Prevent multiple attempts
+      if (profileCreationAttempted) return
+
+      // Wait for profile query to complete (it might be loading initially)
+      if (profileLoading) return
+
+      if (auth?.userId && profile === null && !isLoading && isMounted) {
+        profileCreationAttempted = true
+
+        // User is authenticated but has no profile - create one
+        try {
+          // Check for pending display name from localStorage (set during account creation)
+          const pendingDisplayName =
+            typeof window !== 'undefined' ? localStorage.getItem('pendingDisplayName') : null
+          const displayNameToUse = pendingDisplayName
+            ? pendingDisplayName.substring(0, 3).toUpperCase()
+            : email
+              ? email.split('@')[0].substring(0, 3).toUpperCase()
+              : 'USR'
+
+          // Clear localStorage if we found a pending display name
+          if (pendingDisplayName && typeof window !== 'undefined') {
+            localStorage.removeItem('pendingDisplayName')
+          }
+
+          await ensureProfile(auth.userId, displayNameToUse)
+          console.log('Profile auto-created for signed-in user with displayName:', displayNameToUse)
+        } catch (error) {
+          // Silently fail - profile will be created when user updates score or visits profile page
+          console.log('Could not auto-create profile during sign-in:', error)
+        }
+      }
+    }
+
+    // Only check after a brief delay to avoid race conditions with auth state
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        ensureProfileExists()
+      }
+    }, 1500)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [auth?.userId, profile, profileLoading, email, isLoading])
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault()
     setFormError('')
+    setIsLoading(true)
 
-    if (!email) {
-      setFormError('Email is required')
+    if (!email || !password) {
+      setFormError('Email and password are required')
+      setIsLoading(false)
       return
     }
 
-    // Wait for profile check to complete
-    if (profile === undefined) {
-      setFormError('Checking account...')
-      return
-    }
-
-    // Check if profile exists in Convex - only allow sign-in if profile exists
-    if (profile === null) {
-      setFormError('No account found with this email. Please create an account first.')
-      toast.error('Account not found')
-      setPassword('')
-      return
-    }
-
-    // Profile exists, proceed with sign in
     try {
-      const result = await signIn('password', { email, password })
-      if (result) {
-        toast.success('Signed in successfully')
-        onSignedIn()
+      await signIn('password', { email, password, flow: 'signIn' })
+      toast.success('Signed in successfully')
+      onSignedIn()
+    } catch (error: unknown) {
+      let errorMessage = 'Error signing in'
+
+      if (error instanceof Error) {
+        const message = error.message
+
+        // Handle configuration errors
+        if (message.includes('JWT_PRIVATE_KEY') || message.includes('environment variable')) {
+          errorMessage =
+            'Authentication is not properly configured. Please contact support if this issue persists.'
+        }
+        // Handle specific Supabase auth errors
+        else if (
+          message.includes('Invalid login credentials') ||
+          message.includes('Invalid credentials') ||
+          message.includes('Invalid email or password')
+        ) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.'
+        } else if (message.includes('User not found') || message.includes('No account found')) {
+          errorMessage = 'No account found with this email. Please create an account first.'
+        } else if (message.includes('Email not confirmed')) {
+          errorMessage = 'Please verify your email before signing in.'
+        } else if (message.length > 0) {
+          errorMessage = message || 'Error signing in. Please try again.'
+        }
       }
-    } catch (error: any) {
+
       setPassword('')
-      setFormError(error.message || 'Error signing in')
-      toast.error('Error signing in')
+      setFormError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -97,12 +158,8 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
               required
             />
           </div>
-          <button
-            className="btn-modern mt-2"
-            type="submit"
-            disabled={profile === undefined && email !== ''}
-          >
-            {profile === undefined && email !== '' ? 'Checking...' : 'Sign In'}
+          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
         {formError && (

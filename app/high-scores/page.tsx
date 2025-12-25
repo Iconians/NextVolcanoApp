@@ -1,14 +1,12 @@
 'use client'
 
-import { ConvexClientProvider } from '@/components/ConvexClientProvider'
 import ScoresComp from '@/components/ScoresComp'
 import Link from 'next/link'
-import { useQuery } from 'convex/react'
-import { api } from '@/convex/_generated/api'
+import { useHighScores } from '@/lib/supabase-queries'
 import { useEffect, useRef } from 'react'
 
 function HighScoresContent() {
-  const scores = useQuery(api.queries.highScores.getTopHighScores)
+  const { highScores: scores, loading } = useHighScores(10)
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
@@ -47,9 +45,5 @@ function HighScoresContent() {
 }
 
 export default function HighScoresPage() {
-  return (
-    <ConvexClientProvider>
-      <HighScoresContent />
-    </ConvexClientProvider>
-  )
+  return <HighScoresContent />
 }

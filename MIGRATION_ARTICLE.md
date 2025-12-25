@@ -505,8 +505,3 @@ While the migration required significant effort, the benefits in terms of perfor
 - [Convex Documentation](https://docs.convex.dev)
 - [React Documentation](https://react.dev)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs)
-
----
-
-*This article documents the migration process for the Volcano Trivia App. For questions or contributions, please refer to the project's README.md.*
-
