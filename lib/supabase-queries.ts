@@ -173,4 +173,3 @@ export function useProfileDisplayName(userId: string | null) {
   const { profile } = useProfileByUserId(userId)
   return profile?.display_name || null
 }
-

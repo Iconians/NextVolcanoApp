@@ -1,5 +1,5 @@
 interface Score {
-  userName: string
+  user_name: string
   score: number
 }
 
@@ -21,14 +21,14 @@ export default function ScoresComp({ scores }: ScoresCompProps) {
       <div className="space-y-3">
         {scores.map((score, index) => (
           <div
-            key={`${score.userName}-${score.score}-${index}`}
+            key={`${score.user_name}-${score.score}-${index}`}
             className="modern-card p-4 md:p-6 flex justify-between items-center"
           >
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-volcano-gradient flex items-center justify-center text-white font-bold text-lg">
                 {index + 1}
               </div>
-              <div className="text-xl md:text-2xl font-semibold text-white">{score.userName}</div>
+              <div className="text-xl md:text-2xl font-semibold text-white">{score.user_name}</div>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-volcano-amber">{score.score}</div>
           </div>

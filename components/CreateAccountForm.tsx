@@ -1,64 +1,42 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
-import { useAuthActionsHook } from '@/lib/auth'
+import { useActionState, useEffect } from 'react'
+import { useFormStatus } from 'react-dom'
+import { signUpAction, type AuthResult } from '@/lib/auth-actions'
 import toast from 'react-hot-toast'
 
+function SubmitButton({ isPending: externalPending }: { isPending: boolean }) {
+  const { pending } = useFormStatus()
+  const isPending = pending || externalPending
+
+  return (
+    <button className="btn-modern mt-2" type="submit" disabled={isPending}>
+      {isPending ? 'Creating account...' : 'Create Account'}
+    </button>
+  )
+}
+
 export default function CreateAccountForm({ onAccountCreated }: { onAccountCreated: () => void }) {
-  const [formError, setFormError] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [displayName, setDisplayName] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const { signUp } = useAuthActionsHook()
+  const [state, formAction, isPending] = useActionState<AuthResult | null, FormData>(
+    signUpAction,
+    null
+  )
 
-  const handleCreateAccount = async (e: FormEvent) => {
-    e.preventDefault()
-    setFormError('')
-    setIsLoading(true)
-
-    if (!email || !displayName || !password) {
-      setFormError('Email, username, and password are required')
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      await signUp('password', { email, password, displayName })
+  // Handle successful account creation
+  useEffect(() => {
+    if (state?.success && state.userId) {
       toast.success('Account created successfully!')
-      setIsLoading(false)
-      onAccountCreated()
-    } catch (error: unknown) {
-      let errorMessage = 'Error creating account'
-
-      if (error instanceof Error) {
-        const message = error.message
-
-        // Handle specific Supabase auth errors
-        if (
-          message.includes('User already registered') ||
-          message.includes('already exists') ||
-          message.includes('already registered')
-        ) {
-          errorMessage = 'An account with this email already exists. Please sign in instead.'
-        } else if (message.includes('Invalid email') || message.includes('invalid email')) {
-          errorMessage = 'Please enter a valid email address.'
-        } else if (
-          message.includes('Password') ||
-          message.includes('password') ||
-          message.includes('at least 8 characters')
-        ) {
-          errorMessage = 'Password must be at least 8 characters long.'
-        } else if (message.length > 0) {
-          errorMessage = message || 'Error creating account. Please try again.'
-        }
+      // Store display name for profile creation
+      if (typeof window !== 'undefined') {
+        const formData = new FormData()
+        // We'll need to get displayName from the form - let's use a ref or handle it differently
+        // For now, we'll store it when the form is submitted
       }
-
-      setFormError(errorMessage)
-      toast.error(errorMessage)
-      setIsLoading(false)
+      onAccountCreated()
+    } else if (state?.error) {
+      toast.error(state.error)
     }
-  }
+  }, [state, onAccountCreated])
 
   return (
     <div className="text-wrapper modern-card p-8 md:p-12 max-w-md w-full mx-auto mb-5">
@@ -69,7 +47,17 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
         Create an account to see if you are smart enough to be a volcanologist?
       </p>
       <div>
-        <form onSubmit={handleCreateAccount} className="flex flex-col gap-5 mb-5">
+        <form
+          action={(formData: FormData) => {
+            // Store displayName in localStorage before submitting for profile creation
+            const displayName = formData.get('displayName')?.toString()
+            if (displayName && typeof window !== 'undefined') {
+              localStorage.setItem('pendingDisplayName', displayName)
+            }
+            return formAction(formData)
+          }}
+          className="flex flex-col gap-5 mb-5"
+        >
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-300" htmlFor="username">
               Username (max 3 characters)
@@ -78,12 +66,11 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
               className="input-modern"
               type="text"
               id="username"
-              name="userName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              name="displayName"
               placeholder="Enter username"
               maxLength={3}
               required
+              disabled={isPending}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -95,10 +82,9 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
               type="email"
               id="email"
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
+              disabled={isPending}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -110,19 +96,16 @@ export default function CreateAccountForm({ onAccountCreated }: { onAccountCreat
               type="password"
               id="password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
+              disabled={isPending}
             />
           </div>
-          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create Account'}
-          </button>
+          <SubmitButton isPending={isPending} />
         </form>
-        {formError && (
+        {state?.error && (
           <div className="p-3 rounded-lg bg-volcano-red/20 border border-volcano-red/50 text-volcano-red text-sm">
-            {formError}
+            {state.error}
           </div>
         )}
       </div>

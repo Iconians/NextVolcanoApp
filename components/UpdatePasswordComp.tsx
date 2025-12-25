@@ -1,48 +1,88 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
-import { updateDisplayName } from '@/lib/supabase-mutations'
+import { useActionState, useOptimistic, useEffect, useMemo } from 'react'
+import { useFormStatus } from 'react-dom'
 import { useCurrentUser } from '@/lib/auth'
+import { createUpdateDisplayNameAction } from '@/lib/profile-actions'
+import type { ProfileActionResult } from '@/app/actions/profile'
 import toast from 'react-hot-toast'
 
 interface UpdatePasswordCompProps {
   onUpdateUsername: (newUserName: string) => void
+  currentDisplayName?: string
 }
 
-export default function UpdatePasswordComp({ onUpdateUsername }: UpdatePasswordCompProps) {
-  const [newUserName, setNewUserName] = useState('')
-  const [formError, setFormError] = useState('')
+function SubmitButton({ isPending: externalPending }: { isPending: boolean }) {
+  const { pending } = useFormStatus()
+  const isPending = pending || externalPending
+
+  return (
+    <button className="btn-modern" type="submit" disabled={isPending}>
+      {isPending ? 'Updating...' : 'Change Username'}
+    </button>
+  )
+}
+
+export default function UpdatePasswordComp({
+  onUpdateUsername,
+  currentDisplayName
+}: UpdatePasswordCompProps) {
   const auth = useCurrentUser()
 
-  const handleUpdateUsername = async (e: FormEvent) => {
-    e.preventDefault()
+  // Create action with bound userId
+  const updateDisplayNameAction = useMemo(
+    () => createUpdateDisplayNameAction(auth?.userId || null),
+    [auth?.userId]
+  )
 
-    if (!auth?.userId) {
-      toast.error('No user found')
-      return
-    }
+  const [state, formAction, isPending] = useActionState<ProfileActionResult | null, FormData>(
+    updateDisplayNameAction,
+    null
+  )
 
-    if (!newUserName) {
-      toast.error('Username is required')
-      return
-    }
+  // Optimistic update for display name
+  const [optimisticDisplayName, setOptimisticDisplayName] = useOptimistic(
+    currentDisplayName || 'USR',
+    (state: string, newValue: string) => newValue
+  )
 
-    try {
-      await updateDisplayName(auth.userId, newUserName.substring(0, 3).toUpperCase())
-
+  // Handle successful update
+  useEffect(() => {
+    if (state?.success) {
+      const newName = state.data?.display_name
+      if (newName) {
+        setOptimisticDisplayName(newName)
+        onUpdateUsername(newName)
+      }
       toast.success('Username updated')
-      onUpdateUsername(newUserName)
-      setNewUserName('')
-    } catch (error: any) {
-      setFormError(error.message || 'Error updating username')
-      toast.error(error.message || 'Error updating username')
+    } else if (state?.error) {
+      toast.error(state.error)
     }
+  }, [state, onUpdateUsername, setOptimisticDisplayName])
+
+  if (!auth?.userId) {
+    return (
+      <div className="my-auto modern-card p-6 max-w-md w-full">
+        <div className="mb-6 text-2xl font-semibold text-white">Update Username</div>
+        <p className="text-gray-400">Please sign in to update your username</p>
+      </div>
+    )
   }
 
   return (
     <div className="my-auto modern-card p-6 max-w-md w-full">
       <div className="mb-6 text-2xl font-semibold text-white">Update Username</div>
-      <form className="flex flex-col gap-4" onSubmit={handleUpdateUsername}>
+      <form
+        action={(formData: FormData) => {
+          // Optimistically update UI immediately
+          const newName = formData.get('displayName')?.toString()
+          if (newName) {
+            setOptimisticDisplayName(newName.substring(0, 3).toUpperCase())
+          }
+          return formAction(formData)
+        }}
+        className="flex flex-col gap-4"
+      >
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-300" htmlFor="username">
             Username (max 3 characters)
@@ -52,19 +92,20 @@ export default function UpdatePasswordComp({ onUpdateUsername }: UpdatePasswordC
             placeholder="Change Username"
             type="text"
             id="username"
+            name="displayName"
             maxLength={3}
-            value={newUserName}
-            onChange={(e) => setNewUserName(e.target.value)}
             required
+            disabled={isPending}
           />
+          {optimisticDisplayName && optimisticDisplayName !== currentDisplayName && (
+            <p className="text-sm text-volcano-amber">Preview: {optimisticDisplayName}</p>
+          )}
         </div>
-        <button className="btn-modern" type="submit">
-          Change Username
-        </button>
+        <SubmitButton isPending={isPending} />
       </form>
-      {formError && (
+      {state?.error && (
         <div className="mt-4 p-3 rounded-lg bg-volcano-red/20 border border-volcano-red/50 text-volcano-red text-sm">
-          {formError}
+          {state.error}
         </div>
       )}
     </div>

@@ -8,10 +8,17 @@ import AnimatedVolcanoBackground from '@/components/AnimatedVolcanoBackground'
 import { useProfileByUserId } from '@/lib/supabase-queries'
 import { createProfile, ensureProfile } from '@/lib/supabase-mutations'
 import { useCurrentUser } from '@/lib/auth'
+import type { Profile } from '@/types/game'
+
+interface Score {
+  correct: number
+  incorrect: number
+  timeStamp: string
+}
 
 function ProfileContent() {
   const [userName, setUserName] = useState('')
-  const [userScore, setUserScore] = useState<any[]>([])
+  const [userScore, setUserScore] = useState<Score[]>([])
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
   const auth = useCurrentUser()
   const userId = auth?.userId
@@ -76,27 +83,29 @@ function ProfileContent() {
     if (profile) {
       setUserName(profile.display_name || 'USR')
       if (profile.score) {
-        const parsedScores = profile.score
-          .map((score: any) => {
+        const parsedScores: Score[] = profile.score
+          .map((score) => {
             // Supabase stores scores as objects with time_stamp, convert to timeStamp for component
             if (typeof score === 'string') {
               try {
                 const parsed = JSON.parse(score)
                 return {
-                  ...parsed,
-                  timeStamp: parsed.time_stamp || parsed.timeStamp
+                  correct: parsed.correct || 0,
+                  incorrect: parsed.incorrect || 0,
+                  timeStamp: parsed.time_stamp || parsed.timeStamp || ''
                 }
               } catch {
-                return score
+                return null
               }
             }
             // Convert time_stamp to timeStamp for component compatibility
             return {
-              ...score,
-              timeStamp: score.time_stamp || score.timeStamp
+              correct: score.correct,
+              incorrect: score.incorrect,
+              timeStamp: score.time_stamp || ''
             }
           })
-          .filter(Boolean)
+          .filter((score): score is Score => score !== null)
         setUserScore(parsedScores.slice().reverse())
       }
     }
@@ -122,7 +131,7 @@ function ProfileContent() {
               <ScoreHistory userScore={userScore} />
             </div>
             <div className="w-full lg:w-auto">
-              <UpdatePasswordComp onUpdateUsername={updateUsername} />
+              <UpdatePasswordComp onUpdateUsername={updateUsername} currentDisplayName={userName} />
             </div>
           </div>
           <UserPageButtons />

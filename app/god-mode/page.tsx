@@ -7,16 +7,19 @@ import WinScreen from '@/components/WinScreen'
 import LoadingComponent from '@/components/LoadingComponent'
 import { useRandomQuestions, useAnswers } from '@/lib/supabase-queries'
 import { useGameUtils } from '@/lib/gameUtils'
+import type { Question, Answer } from '@/types/game'
 import toast from 'react-hot-toast'
 
 function GodModeGamePageContent() {
-  const [questionsArray, setQuestionsArray] = useState<any[]>([])
-  const [answerArray, setAnswerArray] = useState<any[]>([])
+  const [questionsArray, setQuestionsArray] = useState<Question[]>([])
+  const [answerArray, setAnswerArray] = useState<Answer[]>([])
   const [wrongAnswers, setWrongAnswers] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [loading, setLoading] = useState(true)
   const [answerSubmitted, setAnswerSubmitted] = useState(false)
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
   const correctSoundRef = useRef<HTMLAudioElement>(null)
   const incorrectSoundRef = useRef<HTMLAudioElement>(null)
@@ -27,7 +30,7 @@ function GodModeGamePageContent() {
   useEffect(() => {
     if (allQuestions && allQuestions.length > 0) {
       // Get 100 unique questions
-      const uniqueQuestions: any[] = []
+      const uniqueQuestions: Question[] = []
       const questionTexts = new Set<string>()
 
       for (const question of allQuestions) {
@@ -79,8 +82,8 @@ function GodModeGamePageContent() {
     }
   }
 
-  const findAnswer = (correctAnswer: any[], answer: string) => {
-    const getAnswer = correctAnswer[0].correct_answer
+  const findAnswer = (correctAnswer: { correct_answer: string }[], answer: string) => {
+    const getAnswer = correctAnswer[0]?.correct_answer
     if (answer === getAnswer) {
       setCorrectAnswers((prev) => prev + 1)
       setAnswerSubmitted(true)
@@ -99,12 +102,14 @@ function GodModeGamePageContent() {
   }
 
   const checkAnswer = async (answer: string) => {
-    const correctAnswer = answerArray.filter(
+    const correctAnswerArray = answerArray.filter(
       (a) => a.question_foreign_key === questionsArray[0]?.id
     )
 
-    if (correctAnswer.length > 0) {
-      findAnswer(correctAnswer, answer)
+    if (correctAnswerArray.length > 0) {
+      setSelectedAnswer(answer)
+      setCorrectAnswer(correctAnswerArray[0].correct_answer)
+      findAnswer(correctAnswerArray, answer)
     }
 
     if (wrongAnswers === 10) {
@@ -126,6 +131,8 @@ function GodModeGamePageContent() {
 
     setTimeout(() => {
       setAnswerSubmitted(false)
+      setSelectedAnswer(null)
+      setCorrectAnswer(null)
     }, 800)
   }
 
@@ -143,6 +150,8 @@ function GodModeGamePageContent() {
           correctAnswers={correctAnswers}
           answerClass={answerClass}
           onSubmit={checkAnswer}
+          selectedAnswer={answerSubmitted ? selectedAnswer : null}
+          correctAnswer={answerSubmitted ? correctAnswer : null}
         />
         <audio ref={backgroundMusicRef} src="/lava-loop-3.wav" autoPlay loop />
         <audio ref={correctSoundRef} src="/correct.mp3" />

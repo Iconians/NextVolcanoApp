@@ -1,10 +1,16 @@
-import moment from 'moment'
 import { useCurrentUser } from './auth'
 import { useProfileDisplayName } from './supabase-queries'
-import { updateUserScore, insertHighScore } from './supabase-mutations'
+import { updateUserScoreDirect, insertHighScoreDirect } from './score-actions'
+import type { Question, Answer } from '@/types/game'
 import toast from 'react-hot-toast'
 
-export function useGameUtils() {
+export function useGameUtils(): {
+  postScore: (correctAnswers: number, wrongAnswers: number) => Promise<void>
+  updateHighScore: (displayName: string | null, correctAnswers: number) => Promise<void>
+  sortQuestions: (questionsArray: Question[], answerArray: Answer[]) => void
+  displayName: string | null
+  userId: string | undefined
+} {
   const auth = useCurrentUser()
   const userId = auth?.userId
   const displayName = useProfileDisplayName(userId || null)
@@ -15,11 +21,13 @@ export function useGameUtils() {
       return
     }
 
-    const timeStamp = moment().format('MMM Do YY')
-
     try {
-      await updateUserScore(userId, correctAnswers, wrongAnswers, timeStamp)
-      toast.success('Score updated')
+      const result = await updateUserScoreDirect(userId, correctAnswers, wrongAnswers)
+      if (result.success) {
+        toast.success('Score updated')
+      } else {
+        toast.error(result.error || 'Error posting score')
+      }
     } catch (error) {
       console.error('Error posting score:', error)
       toast.error('Error posting score')
@@ -30,19 +38,23 @@ export function useGameUtils() {
     if (!displayName) return
 
     try {
-      await insertHighScore(displayName, correctAnswers)
+      await insertHighScoreDirect(displayName, correctAnswers)
     } catch (error) {
       console.error('Error updating high score:', error)
     }
   }
 
-  const sortQuestions = (questionsArray: any[], answerArray: any[]) => {
+  const sortQuestions = (questionsArray: Question[], answerArray: Answer[]) => {
     questionsArray.shift()
-    answerArray.forEach((a) => {
-      if (questionsArray.length > 0 && a.question_foreign_key === questionsArray[0]?.id) {
-        a.answers.sort(() => Math.random() - 0.5)
+    // Shuffle answers for the next question (answers are already shuffled on initial load)
+    const nextQuestionId = questionsArray[0]?.id
+    if (nextQuestionId) {
+      const nextAnswer = answerArray.find((a) => a.question_foreign_key === nextQuestionId)
+      if (nextAnswer && nextAnswer.answers) {
+        // Only shuffle if not already shuffled (optimization)
+        nextAnswer.answers.sort(() => Math.random() - 0.5)
       }
-    })
+    }
   }
 
   return {

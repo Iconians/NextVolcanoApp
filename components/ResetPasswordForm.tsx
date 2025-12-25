@@ -1,62 +1,36 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useFormStatus } from 'react-dom'
+import { resetPasswordAction, type AuthResult } from '@/lib/auth-actions'
 import toast from 'react-hot-toast'
 
+function SubmitButton({ isPending: externalPending }: { isPending: boolean }) {
+  const { pending } = useFormStatus()
+  const isPending = pending || externalPending
+
+  return (
+    <button className="btn-modern mt-2" type="submit" disabled={isPending}>
+      {isPending ? 'Sending...' : 'Reset Password'}
+    </button>
+  )
+}
+
 export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => void }) {
-  const [formError, setFormError] = useState('')
-  const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [state, formAction, isPending] = useActionState<AuthResult | null, FormData>(
+    resetPasswordAction,
+    null
+  )
 
-  const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault()
-    setFormError('')
-    setIsLoading(true)
-
-    if (!email) {
-      setFormError('Email is required')
-      setIsLoading(false)
-      return
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      setFormError('Please enter a valid email address')
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      const { supabase } = await import('@/lib/supabase')
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo:
-          typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined
-      })
-
-      if (error) throw error
-
+  // Handle successful password reset
+  useEffect(() => {
+    if (state?.success) {
       toast.success('Password reset email sent successfully')
       onSubmitted()
-    } catch (error: unknown) {
-      let errorMessage = 'Error sending password reset email'
-
-      if (error instanceof Error) {
-        const message = error.message
-
-        if (message.includes('User not found') || message.includes('Account not found')) {
-          errorMessage = 'No account found with this email address.'
-        } else if (message.length > 0) {
-          errorMessage = message
-        }
-      }
-
-      setFormError(errorMessage)
-      toast.error(errorMessage)
-    } finally {
-      setIsLoading(false)
+    } else if (state?.error) {
+      toast.error(state.error)
     }
-  }
+  }, [state, onSubmitted])
 
   return (
     <div className="text-wrapper modern-card p-8 md:p-12 max-w-md w-full mx-auto">
@@ -67,7 +41,7 @@ export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => 
         Please enter your Email to reset your Password
       </p>
       <div>
-        <form onSubmit={handleResetPassword} className="flex flex-col gap-5">
+        <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-300" htmlFor="email">
               Email
@@ -77,19 +51,16 @@ export default function ResetPasswordForm({ onSubmitted }: { onSubmitted: () => 
               type="email"
               id="email"
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
+              disabled={isPending}
             />
           </div>
-          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
-            {isLoading ? 'Sending...' : 'Reset Password'}
-          </button>
+          <SubmitButton isPending={isPending} />
         </form>
-        {formError && (
+        {state?.error && (
           <div className="mt-4 p-3 rounded-lg bg-volcano-red/20 border border-volcano-red/50 text-volcano-red text-sm">
-            {formError}
+            {state.error}
           </div>
         )}
       </div>

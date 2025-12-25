@@ -1,22 +1,25 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
 import MainQuestionSection from '@/components/MainQuestionSection'
 import LostScreen from '@/components/LostScreen'
 import WinScreen from '@/components/WinScreen'
 import LoadingComponent from '@/components/LoadingComponent'
 import { useRandomQuestions, useAnswers } from '@/lib/supabase-queries'
 import { useGameUtils } from '@/lib/gameUtils'
+import type { Question, Answer } from '@/types/game'
 import toast from 'react-hot-toast'
 
 function GamePageContent() {
-  const [questionsArray, setQuestionsArray] = useState<any[]>([])
-  const [answerArray, setAnswerArray] = useState<any[]>([])
+  const [questionsArray, setQuestionsArray] = useState<Question[]>([])
+  const [answerArray, setAnswerArray] = useState<Answer[]>([])
   const [wrongAnswers, setWrongAnswers] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [loading, setLoading] = useState(true)
   const [answerSubmitted, setAnswerSubmitted] = useState(false)
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
   const backgroundMusicRef = useRef<HTMLAudioElement>(null)
   const correctSoundRef = useRef<HTMLAudioElement>(null)
   const incorrectSoundRef = useRef<HTMLAudioElement>(null)
@@ -24,9 +27,10 @@ function GamePageContent() {
   const { questions: allQuestions, loading: questionsLoading } = useRandomQuestions(100)
 
   const { postScore, updateHighScore, sortQuestions, displayName, userId } = useGameUtils()
+  const [isPending, startTransition] = useTransition()
 
   // Store initial 5 questions for query (never changes)
-  const [initialQuestions, setInitialQuestions] = useState<any[]>([])
+  const [initialQuestions, setInitialQuestions] = useState<Question[]>([])
 
   useEffect(() => {
     // Only initialize questions if game hasn't ended
@@ -38,7 +42,7 @@ function GamePageContent() {
       const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5)
 
       // Get 5 unique random questions from the shuffled array
-      const uniqueQuestions: any[] = []
+      const uniqueQuestions: Question[] = []
       const questionTexts = new Set<string>()
 
       for (const question of shuffledQuestions) {
@@ -59,22 +63,14 @@ function GamePageContent() {
 
   useEffect(() => {
     if (answers && answers.length > 0 && questionsArray.length > 0) {
-      const shuffledAnswers = [...answers]
-      // Shuffle answers for first question
-      const firstQuestionAnswers = shuffledAnswers.filter(
-        (a) => a.question_foreign_key === questionsArray[0].id
-      )
-      if (firstQuestionAnswers.length > 0) {
-        firstQuestionAnswers[0].answers.sort(() => Math.random() - 0.5)
-      }
-      setAnswerArray(shuffledAnswers)
+      setAnswerArray(answers)
       setLoading(false)
     } else if (questionsArray.length === 0 && allQuestions && allQuestions.length > 0) {
       setLoading(false)
     } else if (questionsLoading || answersLoading) {
       setLoading(true)
     }
-  }, [answers, questionsArray, allQuestions, questionsLoading, answersLoading])
+  }, [answers, questionsArray.length, allQuestions, questionsLoading, answersLoading])
 
   const playBackgroundMusic = async () => {
     if (backgroundMusicRef.current) {
@@ -103,6 +99,8 @@ function GamePageContent() {
     const isCorrect = selectedAnswer === currentAnswer.correct_answer
     setAnswerSubmitted(true)
     setLastAnswerCorrect(isCorrect)
+    setSelectedAnswer(selectedAnswer)
+    setCorrectAnswer(currentAnswer.correct_answer)
 
     // Calculate new scores before updating state
     const newCorrectAnswers = isCorrect ? correctAnswers + 1 : correctAnswers
@@ -178,16 +176,22 @@ function GamePageContent() {
     // Don't move if we've answered 5 questions or lost
     if (questionsArray.length > 0 && totalAnswered < 5 && newWrongAnswers < 3) {
       setTimeout(() => {
-        const newQuestions = [...questionsArray]
-        const newAnswers = [...answerArray]
-        sortQuestions(newQuestions, newAnswers)
-        setQuestionsArray(newQuestions)
-        setAnswerArray(newAnswers)
+        startTransition(() => {
+          const newQuestions = [...questionsArray]
+          const newAnswers = [...answerArray]
+          sortQuestions(newQuestions, newAnswers)
+          setQuestionsArray(newQuestions)
+          setAnswerArray(newAnswers)
+        })
       }, 800)
     }
 
     setTimeout(() => {
-      setAnswerSubmitted(false)
+      startTransition(() => {
+        setAnswerSubmitted(false)
+        setSelectedAnswer(null)
+        setCorrectAnswer(null)
+      })
     }, 800)
   }
 
@@ -223,6 +227,8 @@ function GamePageContent() {
           correctAnswers={correctAnswers}
           answerClass={answerClass}
           onSubmit={checkAnswer}
+          selectedAnswer={answerSubmitted ? selectedAnswer : null}
+          correctAnswer={answerSubmitted ? correctAnswer : null}
         />
       )}
       <audio ref={backgroundMusicRef} src="/lava-loop-3.wav" autoPlay loop />

@@ -4,18 +4,7 @@ import { useEffect, useRef } from 'react'
 import QuestionForm from './QuestionForm'
 import GodModeHeartContainer from './GodModeHeartContainer'
 import GameStatistics from './GameStatistics'
-
-interface Question {
-  id: string
-  question: string
-}
-
-interface Answer {
-  id: string
-  question_foreign_key: string
-  answers: string[]
-  correct_answer: string
-}
+import type { Question, Answer } from '@/types/game'
 
 interface GodModeMainQuestionSectionProps {
   questionsArray: Question[]
@@ -24,6 +13,8 @@ interface GodModeMainQuestionSectionProps {
   correctAnswers: number
   answerClass: string
   onSubmit: (answer: string) => void
+  selectedAnswer: string | null
+  correctAnswer: string | null
 }
 
 export default function GodModeMainQuestionSection({
@@ -32,7 +23,9 @@ export default function GodModeMainQuestionSection({
   wrongAnswers,
   correctAnswers,
   answerClass,
-  onSubmit
+  onSubmit,
+  selectedAnswer,
+  correctAnswer
 }: GodModeMainQuestionSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -74,6 +67,8 @@ export default function GodModeMainQuestionSection({
             questionsArray={questionsArray}
             answerArray={answerArray}
             onSubmit={onSubmit}
+            selectedAnswer={selectedAnswer}
+            correctAnswer={correctAnswer}
           />
         </div>
       </div>

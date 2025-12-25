@@ -5,16 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --bun next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write .",
-    "convex:dev": "convex dev",
-    "convex:deploy": "convex deploy",
-    "convert-sql": "tsx scripts/convertSqlToConvex.ts"
+    "build": "bun run --bun next build",
+    "start": "bun run --bun next start",
+    "lint": "bun run --bun next lint",
+    "format": "bun run --bun prettier --write ."
   },
   "dependencies": {
-    "@convex-dev/auth": "^0.0.90",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -22,9 +18,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
-    "convex": "^1.11.2",
     "jose": "^5.10.0",
-    "moment": "^2.30.1",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,17 +1,29 @@
 'use client'
 
-import { useState, FormEvent, useEffect } from 'react'
-import { useAuthActionsHook, useCurrentUser } from '@/lib/auth'
+import { useActionState, useEffect } from 'react'
+import { useFormStatus } from 'react-dom'
+import { useCurrentUser } from '@/lib/auth'
 import { useProfileByUserId } from '@/lib/supabase-queries'
 import { ensureProfile } from '@/lib/supabase-mutations'
+import { signInAction, type AuthResult } from '@/lib/auth-actions'
 import toast from 'react-hot-toast'
 
+function SubmitButton({ isPending: externalPending }: { isPending: boolean }) {
+  const { pending } = useFormStatus()
+  const isPending = pending || externalPending
+
+  return (
+    <button className="btn-modern mt-2" type="submit" disabled={isPending}>
+      {isPending ? 'Signing in...' : 'Sign In'}
+    </button>
+  )
+}
+
 export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
-  const [formError, setFormError] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const { signIn } = useAuthActionsHook()
+  const [state, formAction, isPending] = useActionState<AuthResult | null, FormData>(
+    signInAction,
+    null
+  )
   const auth = useCurrentUser()
   const { profile, loading: profileLoading } = useProfileByUserId(auth?.userId || null)
 
@@ -27,7 +39,7 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
       // Wait for profile query to complete (it might be loading initially)
       if (profileLoading) return
 
-      if (auth?.userId && profile === null && !isLoading && isMounted) {
+      if (auth?.userId && profile === null && !isPending && isMounted) {
         profileCreationAttempted = true
 
         // User is authenticated but has no profile - create one
@@ -37,9 +49,7 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
             typeof window !== 'undefined' ? localStorage.getItem('pendingDisplayName') : null
           const displayNameToUse = pendingDisplayName
             ? pendingDisplayName.substring(0, 3).toUpperCase()
-            : email
-              ? email.split('@')[0].substring(0, 3).toUpperCase()
-              : 'USR'
+            : 'USR'
 
           // Clear localStorage if we found a pending display name
           if (pendingDisplayName && typeof window !== 'undefined') {
@@ -66,57 +76,17 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
       isMounted = false
       clearTimeout(timer)
     }
-  }, [auth?.userId, profile, profileLoading, email, isLoading])
+  }, [auth?.userId, profile, profileLoading, isPending])
 
-  const handleSignIn = async (e: FormEvent) => {
-    e.preventDefault()
-    setFormError('')
-    setIsLoading(true)
-
-    if (!email || !password) {
-      setFormError('Email and password are required')
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      await signIn('password', { email, password, flow: 'signIn' })
+  // Handle successful sign in
+  useEffect(() => {
+    if (state?.success && state.userId) {
       toast.success('Signed in successfully')
       onSignedIn()
-    } catch (error: unknown) {
-      let errorMessage = 'Error signing in'
-
-      if (error instanceof Error) {
-        const message = error.message
-
-        // Handle configuration errors
-        if (message.includes('JWT_PRIVATE_KEY') || message.includes('environment variable')) {
-          errorMessage =
-            'Authentication is not properly configured. Please contact support if this issue persists.'
-        }
-        // Handle specific Supabase auth errors
-        else if (
-          message.includes('Invalid login credentials') ||
-          message.includes('Invalid credentials') ||
-          message.includes('Invalid email or password')
-        ) {
-          errorMessage = 'Invalid email or password. Please check your credentials and try again.'
-        } else if (message.includes('User not found') || message.includes('No account found')) {
-          errorMessage = 'No account found with this email. Please create an account first.'
-        } else if (message.includes('Email not confirmed')) {
-          errorMessage = 'Please verify your email before signing in.'
-        } else if (message.length > 0) {
-          errorMessage = message || 'Error signing in. Please try again.'
-        }
-      }
-
-      setPassword('')
-      setFormError(errorMessage)
-      toast.error(errorMessage)
-    } finally {
-      setIsLoading(false)
+    } else if (state?.error) {
+      toast.error(state.error)
     }
-  }
+  }, [state, onSignedIn])
 
   return (
     <div className="text-wrapper modern-card p-8 md:p-12 max-w-md w-full mx-auto">
@@ -127,7 +97,7 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
         Sign in to see if you are smart enough to be a Volcanologist?
       </p>
       <div>
-        <form onSubmit={handleSignIn} className="flex flex-col gap-5">
+        <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-300" htmlFor="email">
               Email
@@ -137,10 +107,9 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
               type="email"
               id="email"
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
+              disabled={isPending}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -152,19 +121,16 @@ export default function SignInForm({ onSignedIn }: { onSignedIn: () => void }) {
               type="password"
               id="password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
+              disabled={isPending}
             />
           </div>
-          <button className="btn-modern mt-2" type="submit" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
+          <SubmitButton isPending={isPending} />
         </form>
-        {formError && (
+        {state?.error && (
           <div className="mt-4 p-3 rounded-lg bg-volcano-red/20 border border-volcano-red/50 text-volcano-red text-sm">
-            {formError}
+            {state.error}
           </div>
         )}
       </div>

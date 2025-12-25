@@ -20,7 +20,17 @@ function extractErrorMessage(error: unknown): string {
 }
 
 // Auth actions hook - provides sign in, sign up, and sign out functions
-export function useAuthActionsHook() {
+export function useAuthActionsHook(): {
+  signIn: (
+    provider: string,
+    options: { email: string; password: string; flow?: 'signIn' | 'signUp' }
+  ) => Promise<{ userId: string | null }>
+  signUp: (
+    provider: string,
+    options: { email: string; password: string; displayName?: string }
+  ) => Promise<{ userId: string | null }>
+  signOut: () => Promise<void>
+} {
   return {
     signIn: async (
       provider: string,
